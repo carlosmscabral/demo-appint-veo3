@@ -54,7 +54,8 @@ Alternatively, a custom role with the following permissions is required:
 
 - `roles/resourcemanager.projectIamAdmin`
 - `roles/serviceusage.serviceUsageAdmin`
-- `roles/appintegration.admin`
+- `roles/integrations.integrationAdmin`
+- `roles/connectors.admin`
 - `roles/storage.admin`
 - `roles/aiplatform.admin`
 - `roles/cloudtasks.admin`

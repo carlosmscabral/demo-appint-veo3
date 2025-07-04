@@ -112,7 +112,8 @@ fi
 echo "🔑 Granting IAM roles to service account..."
 
 roles_to_grant=(
-    "roles/appintegration.admin"
+    "roles/integrations.integrationAdmin"
+    "roles/connectors.admin"
     "roles/storage.admin"
     "roles/aiplatform.admin"
     "roles/cloudtasks.admin"
