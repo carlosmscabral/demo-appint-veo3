@@ -71,6 +71,7 @@ apis_to_enable=(
     "connectors.googleapis.com"
     "compute.googleapis.com"
     "cloudbuild.googleapis.com"
+    "aiplatform.googleapis.com"
 )
 
 for api in "${apis_to_enable[@]}"; do
