@@ -75,7 +75,10 @@ Before you begin, ensure you have the following installed and configured:
 
 The user running the deployment script needs sufficient permissions on the target Google Cloud project. For simplicity, the **Owner** role (`roles/owner`) is recommended, as the script will be granting broad permissions to other service accounts.
 
-The script simplifies permissions by using the project's **Default Compute Engine service account** for all operations. To ensure this works, the script will automatically grant the `Editor` role (`roles/editor`) to this service account.
+The script simplifies permissions by using the project's **Default Compute Engine service account** for all operations. To ensure this works, the script will automatically grant the following roles to this service account:
+
+- `Editor` (`roles/editor`)
+- `Service Account Token Creator` (`roles/iam.serviceAccountTokenCreator`)
 
 It also grants the `Cloud Run Service Agent` role to the project's **Cloud Build service account** to allow source-based deployments.
 

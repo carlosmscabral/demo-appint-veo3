@@ -47,6 +47,12 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --role="roles/editor" \
     --condition=None --quiet || echo "     (Note: Role may have already existed, which is safe to ignore.)"
 
+echo "  -> Granting Service Account Token Creator role to default Compute Engine SA..."
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="roles/iam.serviceAccountTokenCreator" \
+    --condition=None --quiet || echo "     (Note: Role may have already existed, which is safe to ignore.)"
+
 # Build and deploy the Cloud Run service
 echo "📦 Building and deploying the Cloud Run service..."
 gcloud run deploy "$SERVICE_NAME" \
