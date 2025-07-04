@@ -174,6 +174,16 @@ fi
 # Prepare Application Integration configuration
 echo "📝 Updating Application Integration configuration..."
 
+echo "Installing integrationcli ..."
+curl -L https://raw.githubusercontent.com/GoogleCloudPlatform/application-integration-management-toolkit/main/downloadLatest.sh | sh -
+export PATH=$PATH:$HOME/.integrationcli/bin
+
+if [ -z "$TOKEN" ]; then
+  TOKEN=$(gcloud auth print-access-token)
+fi
+
+integrationcli prefs set --reg="$REGION" --proj="$PROJECT" -t "$TOKEN"
+
 CONFIG_FILE="veo-architecture/dev/config-variables/veo-architecture-config.json"
 
 # Detect OS for sed compatibility
