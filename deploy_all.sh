@@ -182,7 +182,7 @@ if [ -z "$TOKEN" ]; then
   TOKEN=$(gcloud auth print-access-token)
 fi
 
-integrationcli prefs set --reg="$REGION" --proj="$PROJECT" -t "$TOKEN"
+integrationcli prefs set --reg="$REGION" --proj="$PROJECT_ID" -t "$TOKEN"
 
 CONFIG_FILE="veo-architecture/dev/config-variables/veo-architecture-config.json"
 
