@@ -20,7 +20,6 @@ echo "🚀 Initiating deployment sequence..."
 if [ -f "$(dirname "$0")/env.sh" ]; then
     echo " sourcing environment variables..."
     source "$(dirname "$0")/env.sh"
-    echo "--- Operating with Service Account: $SERVICE_ACCOUNT ---"
 else
     echo "❌ Critical Error: env.sh not found. Deployment cannot proceed."
     exit 1
@@ -130,11 +129,16 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --role="roles/run.serviceAgent" \
     --condition=None || echo "✅ Role already exists or cannot be added, skipping."
 
+echo "  -> Granting Storage Object Viewer role to default Compute Engine SA for Cloud Run source deployments..."
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/storage.objectViewer" \
+    --condition=None || echo "✅ Role already exists or cannot be added, skipping."
+
 roles_to_grant=(
     "roles/integrations.integrationAdmin"
     "roles/connectors.admin"
     "roles/storage.admin"
-    "roles/storage.objectViewer"
     "roles/aiplatform.admin"
     "roles/cloudtasks.admin"
     "roles/cloudbuild.builds.builder"

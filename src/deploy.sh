@@ -22,7 +22,6 @@ cd "$(dirname "$0")"
 # Source environment variables
 if [ -f "../env.sh" ]; then
   source "../env.sh"
-  echo "--- [src/deploy.sh] Operating with Service Account: $SERVICE_ACCOUNT ---"
 else
   echo "../env.sh not found. Please create it based on the example."
   exit 1
@@ -48,9 +47,10 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --role="roles/iam.serviceAccountTokenCreator" \
     --condition=None || echo "✅ Role already exists or cannot be added, skipping."
 
-echo "🔑 Granting Storage Object Viewer role to $SA_EMAIL..."
+echo "🔑 Granting Storage Object Viewer role to default Compute Engine SA for Cloud Run source deployments..."
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-    --member="serviceAccount:$SA_EMAIL" \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
     --role="roles/storage.objectViewer" \
     --condition=None || echo "✅ Role already exists or cannot be added, skipping."
 
