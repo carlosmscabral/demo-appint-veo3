@@ -41,24 +41,37 @@ else
 fi
 
 # Grant the service account the ability to create signed URLs
+# Grant the service account the ability to create signed URLs
 echo "🔑 Granting Service Account Token Creator role to $SA_EMAIL..."
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:$SA_EMAIL" \
     --role="roles/iam.serviceAccountTokenCreator" \
     --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
 
-echo "🔑 Granting Storage Object Viewer role to default Compute Engine SA for Cloud Run source deployments..."
-PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
+echo "🔑 Granting Application Integration Invoker role to $SA_EMAIL..."
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
-    --role="roles/storage.objectViewer" \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="roles/integrations.integrationInvoker" \
     --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
 
-echo "🔑 Granting Logs Writer role to default Compute Engine SA for Cloud Build logs..."
-gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
-    --role="roles/logging.logWriter" \
-    --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
+# Grant necessary roles to the default Compute Engine SA for build/deploy
+echo "🔑 Granting necessary roles to default Compute Engine SA..."
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
+COMPUTE_SA_EMAIL="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+compute_sa_roles_to_grant=(
+    "roles/storage.objectViewer"
+    "roles/logging.logWriter"
+    "roles/artifactregistry.writer"
+    "roles/firestore.admin"
+    "roles/cloudtasks.admin"
+)
+for role in "${compute_sa_roles_to_grant[@]}"; do
+    echo "  -> Granting $role..."
+    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+        --member="serviceAccount:$COMPUTE_SA_EMAIL" \
+        --role="$role" \
+        --condition=None --quiet || echo "   (Note: Role may have already existed, which is safe to ignore.)"
+done
 
 # Build and deploy the Cloud Run service
 echo "📦 Building and deploying the Cloud Run service..."
