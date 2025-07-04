@@ -82,6 +82,7 @@ Alternatively, a custom role with the following permissions is required:
 - `roles/integrations.integrationAdmin`
 - `roles/connectors.admin`
 - `roles/storage.admin`
+- `roles/storage.objectViewer`
 - `roles/aiplatform.admin`
 - `roles/cloudtasks.admin`
 - `roles/cloudbuild.builds.builder`
