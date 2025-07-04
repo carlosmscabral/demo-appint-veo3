@@ -81,23 +81,30 @@ done
 
 echo "✅ All necessary APIs are enabled."
 
-# Verify or create the service account
-echo "🔎 Verifying service account..."
-SA_EMAIL="$SERVICE_ACCOUNT"
-SA_NAME=$(echo $SA_EMAIL | cut -d'@' -f1)
+# --- Service Account Setup --- #
+echo "🔎 Setting up service account..."
 
-if gcloud iam service-accounts describe "$SA_EMAIL" --project="$PROJECT_ID" &> /dev/null; then
-    echo "✅ Service account '$SA_EMAIL' already exists."
+# Check if SERVICE_ACCOUNT is a full email or a short name
+if [[ $SERVICE_ACCOUNT == *"@"* ]]; then
+    echo "  -> Using existing service account: $SERVICE_ACCOUNT"
+    SA_EMAIL="$SERVICE_ACCOUNT"
 else
-    echo "🤔 Service account '$SA_EMAIL' not found. Creating it..."
-    gcloud iam service-accounts create "$SA_NAME" \
-        --display-name="VEO Demo Service Account" \
-        --project="$PROJECT_ID"
-    if [ $? -ne 0 ]; then
-        echo "❌ Error creating service account. Deployment halted."
-        exit 1
+    SA_NAME="$SERVICE_ACCOUNT"
+    SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+    echo "  -> Checking for service account: $SA_EMAIL"
+    if gcloud iam service-accounts describe "$SA_EMAIL" --project="$PROJECT_ID" &> /dev/null; then
+        echo "✅ Service account '$SA_EMAIL' already exists."
+    else
+        echo "🤔 Service account '$SA_EMAIL' not found. Creating it..."
+        gcloud iam service-accounts create "$SA_NAME" \
+            --display-name="VEO Demo Service Account ($SA_NAME)" \
+            --project="$PROJECT_ID"
+        if [ $? -ne 0 ]; then
+            echo "❌ Error creating service account. Deployment halted."
+            exit 1
+        fi
+        echo "✅ Service account '$SA_EMAIL' created."
     fi
-    echo "✅ Service account '$SA_EMAIL' created."
 fi
 
 # Grant necessary IAM roles to the service account

@@ -84,15 +84,20 @@ The script relies on an `env.sh` file for all its configuration.
     ```
 2.  **Edit `env.sh`**: Open the `env.sh` file and replace all placeholder values (`<your-...>`) with your specific GCP project details.
 
-    | Variable           | Description                                 | Example                                             |
-    | :----------------- | :------------------------------------------ | :-------------------------------------------------- |
-    | `PROJECT_ID`       | Your Google Cloud Project ID.               | `my-gcp-project-123`                                |
-    | `REGION`           | The GCP region for deployment.              | `us-central1`                                       |
-    | `SERVICE_NAME`     | The name for the Cloud Run service.         | `veo-app`                                           |
-    | `SERVICE_ACCOUNT`  | The email of the service account to create. | `veo-sa@my-gcp-project-123.iam.gserviceaccount.com` |
-    | `QUEUE_NAME`       | The name for the Cloud Tasks queue.         | `veo-queue`                                         |
-    | `STATE_COLLECTION` | The name of the Firestore collection.       | `video-processing-state`                            |
-    | `STATE_DB`         | The name of the Firestore database.         | `(default)`                                         |
+    | Variable           | Description                                                                                                                        | Example                                          |
+    | :----------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------- |
+    | `PROJECT_ID`       | Your Google Cloud Project ID.                                                                                                      | `my-gcp-project-123`                             |
+    | `REGION`           | The GCP region for deployment.                                                                                                     | `us-central1`                                    |
+    | `SERVICE_NAME`     | The name for the Cloud Run service.                                                                                                | `veo-app`                                        |
+    | `SERVICE_ACCOUNT`  | A **short name** to create a new SA (e.g., `veo-sa`), or the **full email** of an existing SA (e.g., a default Compute Engine SA). | `veo-sa` OR `123-compute@...gserviceaccount.com` |
+    | `QUEUE_NAME`       | The name for the Cloud Tasks queue.                                                                                                | `veo-queue`                                      |
+    | `STATE_COLLECTION` | The name of the Firestore collection.                                                                                              | `video-processing-state`                         |
+    | `STATE_DB`         | The name of the Firestore database.                                                                                                | `(default)`                                      |
+
+    **Note on `SERVICE_ACCOUNT`**:
+
+    - If you provide a short name (e.g., `my-sa`), the script will create a new service account named `my-sa@<your-project-id>.iam.gserviceaccount.com`.
+    - If you provide a full email of an existing service account (e.g., a default Compute Engine service account), the script will use that account and grant it the necessary permissions.
 
 ### 3. Run the Deployment Script
 

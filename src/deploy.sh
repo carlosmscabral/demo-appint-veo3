@@ -33,12 +33,19 @@ gcloud services enable run.googleapis.com \
                        integrations.googleapis.com \
                        iamcredentials.googleapis.com
 
+# Determine the full service account email
+if [[ $SERVICE_ACCOUNT != *"@"* ]]; then
+    SA_EMAIL="${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com"
+else
+    SA_EMAIL="$SERVICE_ACCOUNT"
+fi
+
 # Grant the service account the ability to create signed URLs
-echo "🔑 Granting Service Account Token Creator role..."
-gcloud iam service-accounts add-iam-policy-binding "$SERVICE_ACCOUNT" \
-    --member="serviceAccount:$SERVICE_ACCOUNT" \
+echo "🔑 Granting Service Account Token Creator role to $SA_EMAIL..."
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:$SA_EMAIL" \
     --role="roles/iam.serviceAccountTokenCreator" \
-    --project="$PROJECT_ID" || echo "✅ Role already exists, skipping."
+    --condition=None || echo "✅ Role already exists or cannot be added, skipping."
 
 # Build and deploy the Cloud Run service
 echo "📦 Building and deploying the Cloud Run service..."
@@ -46,7 +53,7 @@ gcloud run deploy "$SERVICE_NAME" \
   --source . \
   --region "$REGION" \
   --allow-unauthenticated \
-  --service-account "$SERVICE_ACCOUNT" \
-  --set-env-vars "PROJECT_ID=$PROJECT_ID,REGION=$REGION,SERVICE_ACCOUNT=$SERVICE_ACCOUNT"
+  --service-account "$SA_EMAIL" \
+  --set-env-vars "PROJECT_ID=$PROJECT_ID,REGION=$REGION,SERVICE_ACCOUNT=$SA_EMAIL"
 
 echo "✅ Deployment complete."
