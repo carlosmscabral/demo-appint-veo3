@@ -1,5 +1,5 @@
 {
-	"snapshotNumber": "7",
+	"snapshotNumber": "6",
 	"triggerConfigs": [
 		{
 			"label": "Private Trigger",
@@ -36,7 +36,7 @@
 			"triggerId": "api_trigger/veo3_API_1",
 			"startTasks": [
 				{
-					"taskId": "8"
+					"taskId": "15"
 				}
 			],
 			"properties": {
@@ -95,7 +95,7 @@
 				"template": {
 					"key": "template",
 					"value": {
-						"stringValue": "local f = import \"functions\"; // Import additional functions\n\nlocal veoResp = std.parseJson(f.extVar(\"`Task_6_responseBody`\"));\n\n{\n    \"pollBody\" : {\n        \"operationName\": veoResp.name,\n    }\n\n}\n\n"
+						"stringValue": "local f = import \"functions\"; // Import additional functions\n// Reading variables for the API endpoint\nlocal project = std.extVar(\"`ProjectId`\");\nlocal veoRegion = std.extVar(\"`CONFIG_veoRegion`\");\nlocal veoModel = std.extVar(\"`CONFIG_veoModel`\"); \n\n\nlocal veoResp = std.parseJson(f.extVar(\"`Task_6_responseBody`\"));\nlocal veoOperationUri = \"https://\"+ veoRegion +\"-aiplatform.googleapis.com/v1/projects/\"+ project +\"/locations/\"+ veoRegion +\"/publishers/google/models/\"+ veoModel +\":fetchPredictOperation\";\n\n\n{\n    \"pollBody\" : {\n        \"operationName\": veoResp.name,\n    },\n    \"veoOperationURI\": veoOperationUri,\n\n}\n\n"
 					}
 				}
 			},
@@ -201,12 +201,32 @@
 		},
 		{
 			"task": "JsonnetMapperTask",
+			"taskId": "15",
+			"parameters": {
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\";\n\n\n// Reading variables for the API endpoint\nlocal project = std.extVar(\"`ProjectId`\");\nlocal veoRegion = std.extVar(\"`CONFIG_veoRegion`\");\nlocal veoModel = std.extVar(\"`CONFIG_veoModel`\"); \nlocal operationInput = std.extVar(\"operationInput\");\n\n\nlocal veoResp = std.parseJson(f.extVar(\"`Task_6_responseBody`\"));\nlocal veoOperationUri = \"https://\"+ veoRegion +\"-aiplatform.googleapis.com/v1/projects/\"+ project +\"/locations/\"+ veoRegion +\"/publishers/google/models/\"+ veoModel +\":fetchPredictOperation\";\n\n\nlocal veoOperationPayload = {\n  \"operationName\": operationInput\n}\n\n\n// Final payload for the Vertex AI connector\n{\n  \"veoOperationPayload\": veoOperationPayload,\n  \"veoOperationURI\": veoOperationUri,\n}"
+					}
+				}
+			},
+			"displayName": "Set Check Data",
+			"nextTasks": [
+				{
+					"taskId": "7"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
 			"taskId": "4",
 			"parameters": {
 				"template": {
 					"key": "template",
 					"value": {
-						"stringValue": "local f = import \"functions\";\n\n\n// Reading variables for the API endpoint\nlocal project = std.extVar(\"`CONFIG_vertex-project`\");\nlocal region = std.extVar(\"`CONFIG_vertex-region`\");\nlocal modelId = std.extVar(\"model-name\"); // e.g., \"veo-3-4k\"\n\n// Input content variables\nlocal prompt = std.extVar(\"prompt\");\nlocal inlineData = std.extVar(\"inlineData\"); // Expects a base64 encoded string for the initial image\nlocal mimeType = std.extVar(\"mimeType\"); // Mime type for the inlineData\n\n// Video generation parameters\nlocal storageUri = std.extVar(\"storageURI\"); // GCS URI for the output video\n\n\n// Constructing the body of the request for the Veo3 API\nlocal body = {\n  \"instances\": [\n    {\n      \"prompt\": prompt,\n      \"image\": {\n        \"bytesBase64Encoded\": inlineData,\n        \"mimeType\": mimeType,\n      },\n    },\n  ],\n  \"parameters\": {\n    \"enhancePrompt\": true,\n    // \"generateAudio\": true,\n    \"sampleCount\": 1,\n    \"storageUri\": storageUri,\n  },\n};\n\n// Final payload for the Vertex AI connector\n{\n  \"veoBody\": body,\n}"
+						"stringValue": "local f = import \"functions\";\n\n\n// Reading variables for the API endpoint\nlocal project = std.extVar(\"`ProjectId`\");\nlocal veoRegion = std.extVar(\"`CONFIG_veoRegion`\");\nlocal veoModel = std.extVar(\"`CONFIG_veoModel`\"); \n\n// Input content variables\nlocal prompt = std.extVar(\"prompt\");\nlocal inlineData = std.extVar(\"inlineData\"); // Expects a base64 encoded string for the initial image\nlocal mimeType = std.extVar(\"mimeType\"); // Mime type for the inlineData\n\n// Video generation parameters\nlocal storageUri = std.extVar(\"storageURI\"); // GCS URI for the output video\n\n// Uris\nlocal veoUri = \"https://\"+ veoRegion +\"-aiplatform.googleapis.com/v1/projects/\"+ project +\"/locations/\"+ veoRegion +\"/publishers/google/models/\"+ veoModel +\":predictLongRunning\";\n\n\n// Constructing the body of the request for the Veo3 API\nlocal body = {\n  \"instances\": [\n    {\n      \"prompt\": prompt,\n      \"image\": {\n        \"bytesBase64Encoded\": inlineData,\n        \"mimeType\": mimeType,\n      },\n    },\n  ],\n  \"parameters\": {\n    \"enhancePrompt\": true,\n    // \"generateAudio\": true,\n    \"sampleCount\": 1,\n    \"storageUri\": storageUri,\n  },\n};\n\n// Final payload for the Vertex AI connector\n{\n  \"veoBody\": body,\n  \"veoURI\": veoUri,\n}\n\n\n\n"
 					}
 				}
 			},
@@ -502,26 +522,6 @@
 			"externalTaskType": "NORMAL_TASK"
 		},
 		{
-			"task": "FieldMappingTask",
-			"taskId": "8",
-			"parameters": {
-				"FieldMappingConfigTaskParameterKey": {
-					"key": "FieldMappingConfigTaskParameterKey",
-					"value": {
-						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.FieldMappingConfig\",\n  \"mappedFields\": [{\n    \"inputField\": {\n      \"fieldType\": \"STRING_VALUE\",\n      \"transformExpression\": {\n        \"initialValue\": {\n          \"referenceValue\": \"$veoOperationPayload$\"\n        },\n        \"transformationFunctions\": [{\n          \"functionType\": {\n            \"stringFunction\": {\n              \"functionName\": \"RESOLVE_TEMPLATE\"\n            }\n          }\n        }]\n      }\n    },\n    \"outputField\": {\n      \"referenceKey\": \"$veoOperationPayload$\",\n      \"fieldType\": \"STRING_VALUE\",\n      \"cardinality\": \"OPTIONAL\"\n    }\n  }]\n}"
-					}
-				}
-			},
-			"displayName": "Data Mapping",
-			"nextTasks": [
-				{
-					"taskId": "7"
-				}
-			],
-			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
-			"externalTaskType": "NORMAL_TASK"
-		},
-		{
 			"task": "SubWorkflowExecutorV2Task",
 			"taskId": "9",
 			"parameters": {
@@ -696,21 +696,6 @@
 			"inputOutputType": "IN"
 		},
 		{
-			"key": "model-name",
-			"dataType": "STRING_VALUE",
-			"defaultValue": {
-				"stringValue": "veo-2.0-generate-001"
-			},
-			"inputOutputType": "IN"
-		},
-		{
-			"key": "veoURI",
-			"dataType": "STRING_VALUE",
-			"defaultValue": {
-				"stringValue": "https://us-central1-aiplatform.googleapis.com/v1/projects/dynolab-153020/locations/us-central1/publishers/google/models/veo-2.0-generate-001:predictLongRunning"
-			}
-		},
-		{
 			"key": "`Task_7_responseHeader`",
 			"dataType": "STRING_VALUE",
 			"isTransient": true,
@@ -723,23 +708,9 @@
 			"producer": "1_7"
 		},
 		{
-			"key": "veoOperationURI",
-			"dataType": "STRING_VALUE",
-			"defaultValue": {
-				"stringValue": "https://us-central1-aiplatform.googleapis.com/v1/projects/dynolab-153020/locations/us-central1/publishers/google/models/veo-2.0-generate-001:fetchPredictOperation"
-			}
-		},
-		{
 			"key": "operationInput",
 			"dataType": "STRING_VALUE",
 			"inputOutputType": "IN"
-		},
-		{
-			"key": "veoOperationPayload",
-			"dataType": "STRING_VALUE",
-			"defaultValue": {
-				"stringValue": "{\n  \"operationName\": \"$operationInput$\"\n}"
-			}
 		},
 		{
 			"key": "`Task_6_responseBody`",
@@ -824,6 +795,27 @@
 			"defaultValue": {
 				"jsonValue": "{\n}"
 			}
+		},
+		{
+			"key": "veoURI",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			}
+		},
+		{
+			"key": "veoOperationURI",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			}
+		},
+		{
+			"key": "veoOperationPayload",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			}
 		}
 	],
 	"integrationConfigParameters": [
@@ -832,12 +824,12 @@
 				"key": "`CONFIG_stateDb`",
 				"dataType": "STRING_VALUE",
 				"defaultValue": {
-					"stringValue": "veo3"
+					"stringValue": ""
 				},
 				"displayName": "`CONFIG_stateDb`"
 			},
 			"value": {
-				"stringValue": "veo3"
+				"stringValue": ""
 			}
 		},
 		{
@@ -851,6 +843,32 @@
 			},
 			"value": {
 				"stringValue": ""
+			}
+		},
+		{
+			"parameter": {
+				"key": "`CONFIG_veoModel`",
+				"dataType": "STRING_VALUE",
+				"defaultValue": {
+					"stringValue": "veo-2.0-generate-001"
+				},
+				"displayName": "`CONFIG_veoModel`"
+			},
+			"value": {
+				"stringValue": "veo-2.0-generate-001"
+			}
+		},
+		{
+			"parameter": {
+				"key": "`CONFIG_veoRegion`",
+				"dataType": "STRING_VALUE",
+				"defaultValue": {
+					"stringValue": "us-central1"
+				},
+				"displayName": "`CONFIG_veoRegion`"
+			},
+			"value": {
+				"stringValue": "us-central1"
 			}
 		}
 	],

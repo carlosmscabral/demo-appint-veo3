@@ -1,4 +1,6 @@
 {
 	"`CONFIG_stateCollection`": "#STATE_COLLECTION#",
-	"`CONFIG_stateDb`": "#STATE_DB#"
+	"`CONFIG_stateDb`": "#STATE_DB#",
+	"`CONFIG_veoModel`": "veo-2.0-generate-001",
+	"`CONFIG_veoRegion`": "us-central1"
 }
