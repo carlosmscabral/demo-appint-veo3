@@ -140,6 +140,7 @@ compute_sa_roles_to_grant=(
     "roles/artifactregistry.writer"
     "roles/datastore.owner"
     "roles/cloudtasks.admin"
+    "roles/aiplatform.admin"
 )
 for role in "${compute_sa_roles_to_grant[@]}"; do
     echo "    -> Granting $role..."
