@@ -45,14 +45,20 @@ echo "🔑 Granting Service Account Token Creator role to $SA_EMAIL..."
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:$SA_EMAIL" \
     --role="roles/iam.serviceAccountTokenCreator" \
-    --condition=None || echo "✅ Role already exists or cannot be added, skipping."
+    --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
 
 echo "🔑 Granting Storage Object Viewer role to default Compute Engine SA for Cloud Run source deployments..."
 PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
     --role="roles/storage.objectViewer" \
-    --condition=None || echo "✅ Role already exists or cannot be added, skipping."
+    --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
+
+echo "🔑 Granting Logs Writer role to default Compute Engine SA for Cloud Build logs..."
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/logging.logWriter" \
+    --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
 
 # Build and deploy the Cloud Run service
 echo "📦 Building and deploying the Cloud Run service..."

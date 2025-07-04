@@ -90,10 +90,10 @@ Alternatively, a custom role with the following permissions is required:
 - `roles/iam.serviceAccountUser`
 - `roles/firestore.admin`
 
-**Note**: The script will also automatically attempt to grant two permissions to Google-managed service accounts to ensure deployment succeeds:
+**Note**: The script will also automatically attempt to grant permissions to Google-managed service accounts to ensure deployment succeeds:
 
 - It grants the `Cloud Run Service Agent` (`roles/run.serviceAgent`) role to the project's **Cloud Build service account**.
-- It grants the `Storage Object Viewer` (`roles/storage.objectViewer`) role to the project's **Default Compute Engine service account**.
+- It grants the `Storage Object Viewer` (`roles/storage.objectViewer`) and `Logs Writer` (`roles/logging.logWriter`) roles to the project's **Default Compute Engine service account**.
   The user running the script needs permission to grant these roles.
 
 ## 🚀 Deployment

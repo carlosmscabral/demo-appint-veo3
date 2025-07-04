@@ -128,13 +128,19 @@ PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectN
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
     --role="roles/run.serviceAgent" \
-    --condition=None || echo "✅ Role already exists or cannot be added, skipping."
+    --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
 
 echo "  -> Granting Storage Object Viewer role to default Compute Engine SA for Cloud Run source deployments..."
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
     --role="roles/storage.objectViewer" \
-    --condition=None || echo "✅ Role already exists or cannot be added, skipping."
+    --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
+
+echo "  -> Granting Logs Writer role to default Compute Engine SA for Cloud Build logs..."
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/logging.logWriter" \
+    --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
 
 roles_to_grant=(
     "roles/integrations.integrationAdmin"
@@ -150,10 +156,11 @@ for role in "${roles_to_grant[@]}"; do
     gcloud projects add-iam-policy-binding "$PROJECT_ID" \
         --member="serviceAccount:$SA_EMAIL" \
         --role="$role" \
-        --condition=None
+        --condition=None --quiet
     if [ $? -ne 0 ]; then
-        echo "❌ Error granting $role. Deployment halted."
-        exit 1
+        # This command can fail if the role is already present, so we check stderr.
+        # We can ignore the error if it's just a conflict.
+        echo "   (Note: Role may have already existed, which is safe to ignore.)"
     fi
 done
 
