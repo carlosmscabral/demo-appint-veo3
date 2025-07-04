@@ -84,10 +84,13 @@ Alternatively, a custom role with the following permissions is required:
 - `roles/storage.admin`
 - `roles/aiplatform.admin`
 - `roles/cloudtasks.admin`
+- `roles/cloudbuild.builds.builder`
 - `roles/run.admin`
 - `roles/iam.serviceAccountAdmin`
 - `roles/iam.serviceAccountUser`
 - `roles/firestore.admin`
+
+**Note**: The script will also automatically attempt to grant the `Cloud Run Service Agent` (`roles/run.serviceAgent`) role to the project's Cloud Build service account. The user running the script needs permission to grant this role.
 
 ## 🚀 Deployment
 

@@ -69,6 +69,7 @@ apis_to_enable=(
     "cloudtasks.googleapis.com"
     "connectors.googleapis.com"
     "compute.googleapis.com"
+    "cloudbuild.googleapis.com"
 )
 
 for api in "${apis_to_enable[@]}"; do
@@ -121,12 +122,20 @@ fi
 # Grant necessary IAM roles to the service account
 echo "🔑 Granting IAM roles to service account..."
 
+echo "  -> Granting Cloud Run Service Agent role to Cloud Build SA..."
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+    --role="roles/run.serviceAgent" \
+    --condition=None || echo "✅ Role already exists or cannot be added, skipping."
+
 roles_to_grant=(
     "roles/integrations.integrationAdmin"
     "roles/connectors.admin"
     "roles/storage.admin"
     "roles/aiplatform.admin"
     "roles/cloudtasks.admin"
+    "roles/cloudbuild.builds.builder"
 )
 
 for role in "${roles_to_grant[@]}"; do
