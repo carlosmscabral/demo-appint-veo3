@@ -130,14 +130,16 @@ The script relies on an `env.sh` file for all its configuration.
 Make the script executable and run it:
 
 ```bash
+chmod +x deploy_all.sh
 ./deploy_all.sh
 ```
 
-The script will perform the following actions:
+The script will guide you through the deployment process. It will perform the following actions:
 
 - Validate your environment variables.
 - Force gcloud re-authentication for security.
 - Enable all required GCP APIs.
+- **Pause and prompt you to perform a one-time manual setup for Application Integration in the Cloud Console.** This is a critical step.
 - Create and configure a service account with the necessary IAM roles.
 - Create the Firestore database and Cloud Tasks queue if they don't exist.
 - Substitute placeholder values in all Application Integration configuration files.

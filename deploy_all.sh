@@ -82,6 +82,16 @@ done
 
 echo "✅ All necessary APIs are enabled."
 
+# --- Manual Step: Enable Application Integration --- #
+echo "🛑 IMPORTANT: Manual step required!"
+echo "You must now enable Application Integration for your selected region in the Google Cloud Console."
+echo "1. Click the following link to open the console:"
+echo "   https://console.cloud.google.com/integrations/locations?project=$PROJECT_ID"
+echo "2. Select the '$REGION' region and click 'Enable'."
+echo "3. Wait for the process to complete."
+echo "For more details, see: https://cloud.google.com/application-integration/docs/setup-application-integration#quick"
+read -p "Press [Enter] to continue once you have enabled Application Integration in the console..."
+
 # --- Service Account Setup --- #
 echo "🔎 Setting up service account..."
 
