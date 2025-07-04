@@ -17,17 +17,16 @@
 echo "📦 Setting up GCP environment variables..."
 
 # Set your Google Cloud project ID
-export PROJECT_ID="dynolab-153020"
+export PROJECT_ID="<your-gcp-project-id>"
 
 # Set the default region for your GCP resources
-export REGION="us-east1"
-
+export REGION="<your-gcp-region>"
 
 # Set the Cloud Run service name
-export SERVICE_NAME="veo-app"
+export SERVICE_NAME="<your-cloud-run-service-name>"
 
-# Set the service account for the Cloud Run service
-export SERVICE_ACCOUNT="532862411978-compute@developer.gserviceaccount.com"
+# Set the service account (short name or full email)
+export SERVICE_ACCOUNT="<your-service-account-name-or-email>"
 
 # Set the queue name
 export QUEUE_NAME="<your-queue-name>"
