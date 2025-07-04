@@ -56,16 +56,17 @@ echo "✅ All environment variables are properly set."
 # Force gcloud re-authentication
 echo "🔐 Forcing gcloud re-authentication..."
 gcloud auth login
-gcloud auth application-default login
-echo "✅ gcloud authentication successful."
+
 
 # Enable necessary GCP APIs
 echo "🛠️ Enabling required GCP APIs..."
 
 apis_to_enable=(
+    "cloudresourcemanager.googleapis.com"
+    "integrations.googleapis.com"
+    "secretmanager.googleapis.com"
     "firestore.googleapis.com"
     "cloudtasks.googleapis.com"
-    "applicationintegration.googleapis.com"
     "connectors.googleapis.com"
     "compute.googleapis.com"
 )
