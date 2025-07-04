@@ -126,6 +126,7 @@ The script relies on an `env.sh` file for all its configuration.
     | `QUEUE_NAME`       | The name for the Cloud Tasks queue.                                                                                                | `veo-queue`                                      |
     | `STATE_COLLECTION` | The name of the Firestore collection.                                                                                              | `video-processing-state`                         |
     | `STATE_DB`         | The name of the Firestore database.                                                                                                | `(default)`                                      |
+    | `GCS_BUCKET_URI`   | The globally unique URI for the Cloud Storage bucket.                                                                              | `gs://my-unique-veo-bucket-1234`                 |
 
     **Note on `SERVICE_ACCOUNT`**:
 
@@ -148,7 +149,7 @@ The script will guide you through the deployment process. It will perform the fo
 - Enable all required GCP APIs.
 - **Pause and prompt you to perform a one-time manual setup for Application Integration in the Cloud Console.** This is a critical step.
 - Create and configure a service account with the necessary IAM roles.
-- Create the Firestore database and Cloud Tasks queue if they don't exist.
+- Create the Firestore database, Cloud Tasks queue, and GCS bucket if they don't exist.
 - Substitute placeholder values in all Application Integration configuration files.
 - Deploy all Application Integration assets (`gemini-v2`, `veo3`, etc.).
 - Prompt you to optionally deploy the Python web application to Cloud Run.

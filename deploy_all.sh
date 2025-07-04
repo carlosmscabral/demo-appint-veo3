@@ -36,6 +36,7 @@ variables_to_check=(
     "QUEUE_NAME"
     "STATE_COLLECTION"
     "STATE_DB"
+    "GCS_BUCKET_URI"
 )
 
 all_vars_valid=true
@@ -194,6 +195,20 @@ else
         exit 1
     fi
     echo "✅ Cloud Tasks queue '$QUEUE_NAME' created."
+fi
+
+# Verify or create GCS Bucket
+echo "🪣 Verifying GCS bucket..."
+if gcloud storage buckets describe "$GCS_BUCKET_URI" --project="$PROJECT_ID" &> /dev/null; then
+    echo "✅ GCS bucket '$GCS_BUCKET_URI' already exists."
+else
+    echo "🤔 GCS bucket '$GCS_BUCKET_URI' not found. Creating it..."
+    gcloud storage buckets create "$GCS_BUCKET_URI" -l "$REGION" --project="$PROJECT_ID"
+    if [ $? -ne 0 ]; then
+        echo "❌ Error creating GCS bucket. Deployment halted."
+        exit 1
+    fi
+    echo "✅ GCS bucket '$GCS_BUCKET_URI' created."
 fi
 
 # Prepare Application Integration configuration

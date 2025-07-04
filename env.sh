@@ -37,6 +37,9 @@ export STATE_COLLECTION="<your-state-collection>"
 # Set the state database name. valid characters are /[a-z][0-9]-/
 export STATE_DB="<your-state-db>"
 
+# Set the URI for the Cloud Storage bucket (e.g., gs://my-unique-bucket)
+export GCS_BUCKET_URI="gs://<your-unique-bucket-name>"
+
 echo "✅ GCP environment variables set."
 echo "PROJECT_ID: $PROJECT_ID"
 echo "REGION: $REGION"
@@ -45,5 +48,6 @@ echo "SERVICE_ACCOUNT: $SERVICE_ACCOUNT"
 echo "QUEUE_NAME: $QUEUE_NAME"
 echo "STATE_COLLECTION: $STATE_COLLECTION"
 echo "STATE_DB: $STATE_DB"
+echo "GCS_BUCKET_URI: $GCS_BUCKET_URI"
 
 gcloud config set project $PROJECT_ID
