@@ -137,7 +137,7 @@ compute_sa_roles_to_grant=(
     "roles/storage.objectViewer"
     "roles/logging.logWriter"
     "roles/artifactregistry.writer"
-    "roles/firestore.admin"
+    "roles/datastore.owner"
     "roles/cloudtasks.admin"
 )
 for role in "${compute_sa_roles_to_grant[@]}"; do
@@ -155,6 +155,7 @@ roles_to_grant=(
     "roles/aiplatform.admin"
     "roles/cloudtasks.admin"
     "roles/cloudbuild.builds.builder"
+    "roles/datastore.owner"
 )
 
 for role in "${roles_to_grant[@]}"; do

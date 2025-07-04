@@ -89,12 +89,12 @@ Alternatively, a custom role with the following permissions is required:
 - `roles/iam.serviceAccountAdmin`
 - `roles/iam.serviceAccountUser`
 - `roles/integrations.integrationInvoker`
-- `roles/firestore.admin`
+- `roles/datastore.owner`
 
 **Note**: The script will also automatically attempt to grant permissions to Google-managed service accounts to ensure deployment succeeds:
 
 - It grants the `Cloud Run Service Agent` (`roles/run.serviceAgent`) role to the project's **Cloud Build service account**.
-- It grants the `Storage Object Viewer`, `Logs Writer`, `Artifact Registry Writer`, `Firestore Admin`, and `Cloud Tasks Admin` roles to the project's **Default Compute Engine service account**.
+- It grants the `Storage Object Viewer`, `Logs Writer`, `Artifact Registry Writer`, `Datastore Owner`, and `Cloud Tasks Admin` roles to the project's **Default Compute Engine service account**.
   The user running the script needs permission to grant these roles.
 
 ## 🚀 Deployment

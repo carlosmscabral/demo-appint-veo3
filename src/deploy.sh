@@ -41,7 +41,6 @@ else
 fi
 
 # Grant the service account the ability to create signed URLs
-# Grant the service account the ability to create signed URLs
 echo "🔑 Granting Service Account Token Creator role to $SA_EMAIL..."
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:$SA_EMAIL" \
@@ -62,7 +61,7 @@ compute_sa_roles_to_grant=(
     "roles/storage.objectViewer"
     "roles/logging.logWriter"
     "roles/artifactregistry.writer"
-    "roles/firestore.admin"
+    "roles/datastore.owner"
     "roles/cloudtasks.admin"
 )
 for role in "${compute_sa_roles_to_grant[@]}"; do
