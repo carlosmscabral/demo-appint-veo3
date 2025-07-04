@@ -73,29 +73,11 @@ Before you begin, ensure you have the following installed and configured:
 
 ### 🔑 Required Permissions
 
-The user or service account running the deployment script needs sufficient permissions on the target Google Cloud project. For simplicity, the **Owner** role (`roles/owner`) is recommended.
+The user running the deployment script needs sufficient permissions on the target Google Cloud project. For simplicity, the **Owner** role (`roles/owner`) is recommended, as the script will be granting broad permissions to other service accounts.
 
-Alternatively, a custom role with the following permissions is required:
+The script simplifies permissions by using the project's **Default Compute Engine service account** for all operations. To ensure this works, the script will automatically grant the `Editor` role (`roles/editor`) to this service account.
 
-- `roles/resourcemanager.projectIamAdmin`
-- `roles/serviceusage.serviceUsageAdmin`
-- `roles/integrations.integrationAdmin`
-- `roles/connectors.admin`
-- `roles/storage.admin`
-- `roles/aiplatform.admin`
-- `roles/cloudtasks.admin`
-- `roles/cloudbuild.builds.builder`
-- `roles/run.admin`
-- `roles/iam.serviceAccountAdmin`
-- `roles/iam.serviceAccountUser`
-- `roles/integrations.integrationInvoker`
-- `roles/datastore.owner`
-
-**Note**: The script will also automatically attempt to grant permissions to Google-managed service accounts to ensure deployment succeeds:
-
-- It grants the `Cloud Run Service Agent` (`roles/run.serviceAgent`) role to the project's **Cloud Build service account**.
-- It grants the `Storage Object Viewer`, `Logs Writer`, `Artifact Registry Writer`, `Datastore Owner`, `Cloud Tasks Admin`, and `Vertex AI Admin` roles to the project's **Default Compute Engine service account**.
-  The user running the script needs permission to grant these roles.
+It also grants the `Cloud Run Service Agent` role to the project's **Cloud Build service account** to allow source-based deployments.
 
 ## 🚀 Deployment
 
@@ -110,7 +92,7 @@ cd demo-appint-veo3
 
 ### 2. Configure Your Environment
 
-The script relies on an `env.sh` file for all its configuration.
+The script relies on an `env.sh` file for its configuration.
 
 1.  **Create the file**:
     ```bash
@@ -118,21 +100,15 @@ The script relies on an `env.sh` file for all its configuration.
     ```
 2.  **Edit `env.sh`**: Open the `env.sh` file and replace all placeholder values (`<your-...>`) with your specific GCP project details.
 
-    | Variable           | Description                                                                                                                        | Example                                          |
-    | :----------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------- |
-    | `PROJECT_ID`       | Your Google Cloud Project ID.                                                                                                      | `my-gcp-project-123`                             |
-    | `REGION`           | The GCP region for deployment.                                                                                                     | `us-central1`                                    |
-    | `SERVICE_NAME`     | The name for the Cloud Run service.                                                                                                | `veo-app`                                        |
-    | `SERVICE_ACCOUNT`  | A **short name** to create a new SA (e.g., `veo-sa`), or the **full email** of an existing SA (e.g., a default Compute Engine SA). | `veo-sa` OR `123-compute@...gserviceaccount.com` |
-    | `QUEUE_NAME`       | The name for the Cloud Tasks queue.                                                                                                | `veo-queue`                                      |
-    | `STATE_COLLECTION` | The name of the Firestore collection.                                                                                              | `video-processing-state`                         |
-    | `STATE_DB`         | The name of the Firestore database.                                                                                                | `(default)`                                      |
-    | `GCS_BUCKET_URI`   | The globally unique URI for the Cloud Storage bucket.                                                                              | `gs://my-unique-veo-bucket-1234`                 |
-
-    **Note on `SERVICE_ACCOUNT`**:
-
-    - If you provide a short name (e.g., `my-sa`), the script will create a new service account named `my-sa@<your-project-id>.iam.gserviceaccount.com`.
-    - If you provide a full email of an existing service account (e.g., a default Compute Engine service account), the script will use that account and grant it the necessary permissions.
+    | Variable           | Description                                           | Example                          |
+    | :----------------- | :---------------------------------------------------- | :------------------------------- |
+    | `PROJECT_ID`       | Your Google Cloud Project ID.                         | `my-gcp-project-123`             |
+    | `REGION`           | The GCP region for deployment.                        | `us-central1`                    |
+    | `SERVICE_NAME`     | The name for the Cloud Run service.                   | `veo-app`                        |
+    | `QUEUE_NAME`       | The name for the Cloud Tasks queue.                   | `veo-queue`                      |
+    | `STATE_COLLECTION` | The name of the Firestore collection.                 | `video-processing-state`         |
+    | `STATE_DB`         | The name of the Firestore database.                   | `(default)`                      |
+    | `GCS_BUCKET_URI`   | The globally unique URI for the Cloud Storage bucket. | `gs://my-unique-veo-bucket-1234` |
 
 ### 3. Run the Deployment Script
 

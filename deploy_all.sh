@@ -32,7 +32,6 @@ variables_to_check=(
     "PROJECT_ID"
     "REGION"
     "SERVICE_NAME"
-    "SERVICE_ACCOUNT"
     "QUEUE_NAME"
     "STATE_COLLECTION"
     "STATE_DB"
@@ -95,83 +94,24 @@ echo "3. Wait for the process to complete."
 echo "For more details, see: https://cloud.google.com/application-integration/docs/setup-application-integration#quick"
 read -p "Press [Enter] to continue once you have enabled Application Integration in the console..."
 
-# --- Service Account Setup --- #
-echo "🔎 Setting up service account..."
+# --- Service Account and Permissions Setup --- #
+echo "🔑 Setting up service account and permissions..."
 
-# Check if SERVICE_ACCOUNT is a full email or a short name
-if [[ $SERVICE_ACCOUNT == *"@"* ]]; then
-    echo "  -> Using existing service account: $SERVICE_ACCOUNT"
-    SA_EMAIL="$SERVICE_ACCOUNT"
-else
-    SA_NAME="$SERVICE_ACCOUNT"
-    SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
-    echo "  -> Checking for service account: $SA_EMAIL"
-    if gcloud iam service-accounts describe "$SA_EMAIL" --project="$PROJECT_ID" &> /dev/null; then
-        echo "✅ Service account '$SA_EMAIL' already exists."
-    else
-        echo "🤔 Service account '$SA_EMAIL' not found. Creating it..."
-        gcloud iam service-accounts create "$SA_NAME" \
-            --display-name="VEO Demo Service Account ($SA_NAME)" \
-            --project="$PROJECT_ID"
-        if [ $? -ne 0 ]; then
-            echo "❌ Error creating service account. Deployment halted."
-            exit 1
-        fi
-        echo "✅ Service account '$SA_EMAIL' created."
-    fi
-fi
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
+SA_EMAIL="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
-# Grant necessary IAM roles to the service account
-echo "🔑 Granting IAM roles to service account..."
+echo "  -> Using default Compute Engine service account: $SA_EMAIL"
+echo "  -> Granting Editor role to default Compute Engine SA..."
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="roles/editor" \
+    --condition=None --quiet || echo "     (Note: Role may have already existed, which is safe to ignore.)"
 
 echo "  -> Granting Cloud Run Service Agent role to Cloud Build SA..."
-PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
     --role="roles/run.serviceAgent" \
-    --condition=None --quiet || echo "✅ Role already exists or cannot be added, skipping."
-
-# Grant necessary roles to the default Compute Engine SA for build/deploy
-echo "  -> Granting necessary roles to default Compute Engine SA..."
-COMPUTE_SA_EMAIL="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
-compute_sa_roles_to_grant=(
-    "roles/storage.objectViewer"
-    "roles/logging.logWriter"
-    "roles/artifactregistry.writer"
-    "roles/datastore.owner"
-    "roles/cloudtasks.admin"
-    "roles/aiplatform.admin"
-)
-for role in "${compute_sa_roles_to_grant[@]}"; do
-    echo "    -> Granting $role..."
-    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-        --member="serviceAccount:$COMPUTE_SA_EMAIL" \
-        --role="$role" \
-        --condition=None --quiet || echo "     (Note: Role may have already existed, which is safe to ignore.)"
-done
-
-roles_to_grant=(
-    "roles/integrations.integrationAdmin"
-    "roles/connectors.admin"
-    "roles/storage.admin"
-    "roles/aiplatform.admin"
-    "roles/cloudtasks.admin"
-    "roles/cloudbuild.builds.builder"
-    "roles/datastore.owner"
-)
-
-for role in "${roles_to_grant[@]}"; do
-    echo "  -> Granting $role..."
-    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-        --member="serviceAccount:$SA_EMAIL" \
-        --role="$role" \
-        --condition=None --quiet
-    if [ $? -ne 0 ]; then
-        # This command can fail if the role is already present, so we check stderr.
-        # We can ignore the error if it's just a conflict.
-        echo "   (Note: Role may have already existed, which is safe to ignore.)"
-    fi
-done
+    --condition=None --quiet || echo "     (Note: Role may have already existed, which is safe to ignore.)"
 
 echo "✅ All necessary IAM roles granted."
 

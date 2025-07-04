@@ -25,9 +25,6 @@ export REGION="<your-gcp-region>"
 # Set the Cloud Run service name
 export SERVICE_NAME="<your-cloud-run-service-name>"
 
-# Set the service account (short name or full email)
-export SERVICE_ACCOUNT="<your-service-account-name-or-email>"
-
 # Set the queue name. valid characters are /[a-z][0-9]-/
 export QUEUE_NAME="<your-queue-name>"
 
@@ -44,7 +41,6 @@ echo "✅ GCP environment variables set."
 echo "PROJECT_ID: $PROJECT_ID"
 echo "REGION: $REGION"
 echo "SERVICE_NAME: $SERVICE_NAME"
-echo "SERVICE_ACCOUNT: $SERVICE_ACCOUNT"
 echo "QUEUE_NAME: $QUEUE_NAME"
 echo "STATE_COLLECTION: $STATE_COLLECTION"
 echo "STATE_DB: $STATE_DB"
