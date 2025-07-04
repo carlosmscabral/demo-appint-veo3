@@ -1,0 +1,311 @@
+{
+	"snapshotNumber": "1",
+	"triggerConfigs": [
+		{
+			"label": "Add Task",
+			"triggerType": "API",
+			"triggerNumber": "1",
+			"triggerId": "api_trigger/add-task-queue_API_1",
+			"startTasks": [
+				{
+					"taskId": "1"
+				}
+			],
+			"properties": {
+				"Trigger name": "add-task-queue_API_1"
+			}
+		},
+		{
+			"label": "Private Add Task",
+			"triggerType": "PRIVATE_TRIGGER",
+			"triggerNumber": "2",
+			"triggerId": "private_trigger/add-task-queue_Private_1",
+			"startTasks": [
+				{
+					"taskId": "1"
+				}
+			],
+			"properties": {
+				"Trigger name": "add-task-queue_Private_1"
+			}
+		}
+	],
+	"taskConfigs": [
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "1",
+			"parameters": {
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\"; // Import additional functions\n\nlocal region = std.extVar('region');\nlocal queueName = std.extVar('queueName');\nlocal integration = std.extVar('taskIntegration');\nlocal integrationPayload = std.extVar('taskIntegrationPayload');\nlocal integrationTriggerId = std.extVar('taskIntegrationTriggerId');\nlocal project = std.extVar('`ProjectId`');\n\n\n{\n   \"tasksUri\": \"https://cloudtasks.googleapis.com/v2/projects/\" + project + \"/locations/\"+ region + \"/queues/\" + queueName + \"/tasks\",\n   \"tasksBody\": {\n        \"task\": {\n            \"httpRequest\": {\n                \"url\": \"https://integrations.googleapis.com/v2/projects/\" + project + \"/locations/\" + region + \"/integrations/\" + integration + \":execute?triggerId=\" + integrationTriggerId,\n                \"oauthToken\": {\n                    \"serviceAccountEmail\": \"532862411978-compute@developer.gserviceaccount.com\",\n                    \"scope\": \"https://www.googleapis.com/auth/cloud-platform\",\n                },\n                \"httpMethod\": \"POST\",\n                \"headers\": {\n                    \"Content-Type\": \"application/json\"\n                },\n                \"body\": std.base64(std.encodeUTF8(std.manifestJson(integrationPayload))),\n            }\n        }\n    },\n}"
+					}
+				}
+			},
+			"displayName": "Set Payload and URIs",
+			"nextTasks": [
+				{
+					"taskId": "2"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "2",
+			"parameters": {
+				"additionalHeaders": {
+					"key": "additionalHeaders",
+					"value": {}
+				},
+				"authConfigName": {
+					"key": "authConfigName",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"disableSSLValidation": {
+					"key": "disableSSLValidation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"followRedirects": {
+					"key": "followRedirects",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"httpMethod": {
+					"key": "httpMethod",
+					"value": {
+						"stringValue": "POST"
+					}
+				},
+				"httpParams": {
+					"key": "httpParams",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"content-type\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"application/json\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"jsonAdditionalHeaders": {
+					"key": "jsonAdditionalHeaders",
+					"value": {
+						"jsonValue": "null"
+					}
+				},
+				"requestBody": {
+					"key": "requestBody",
+					"value": {
+						"stringValue": "$tasksBody$"
+					}
+				},
+				"requestorId": {
+					"key": "requestorId",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"responseBody": {
+					"key": "responseBody",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_2_responseBody`$"
+							]
+						}
+					}
+				},
+				"responseHeader": {
+					"key": "responseHeader",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_2_responseHeader`$"
+							]
+						}
+					}
+				},
+				"responseStatus": {
+					"key": "responseStatus",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_2_responseStatus`$"
+							]
+						}
+					}
+				},
+				"throwError": {
+					"key": "throwError",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"timeout": {
+					"key": "timeout",
+					"value": {
+						"intValue": "0"
+					}
+				},
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "$tasksUri$"
+					}
+				},
+				"urlFetchingService": {
+					"key": "urlFetchingService",
+					"value": {
+						"stringValue": "HARPOON"
+					}
+				},
+				"urlQueryStrings": {
+					"key": "urlQueryStrings",
+					"value": {}
+				},
+				"useSSL": {
+					"key": "useSSL",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"userAgent": {
+					"key": "userAgent",
+					"value": {
+						"stringValue": ""
+					}
+				}
+			},
+			"displayName": "Publish Task to Queue",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		}
+	],
+	"integrationParameters": [
+		{
+			"key": "`ExecutionMode`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`ErrorInfo`",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n  \"message\": \"\",\n  \"code\": 0.0\n}"
+			},
+			"isTransient": true,
+			"jsonSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"number\"\n    },\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}"
+		},
+		{
+			"key": "`ExecutionId`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`IntegrationName`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`Region`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`ProjectId`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "taskIntegrationPayload",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "tasksUri",
+			"dataType": "STRING_VALUE"
+		},
+		{
+			"key": "queueName",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "veo-queue"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "region",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "us-east1"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "taskIntegration",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "veo3"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "taskIntegrationTriggerId",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "api_trigger/gemini-multimodal_API_1"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "`Task_2_responseHeader`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_2"
+		},
+		{
+			"key": "`Task_2_responseBody`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_2"
+		},
+		{
+			"key": "`Task_2_responseStatus`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_2"
+		},
+		{
+			"key": "tasksBody",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			}
+		}
+	],
+	"databasePersistencePolicy": "DATABASE_PERSISTENCE_ASYNC",
+	"cloudLoggingDetails": {
+		"cloudLoggingSeverity": "CLOUD_LOGGING_SEVERITY_UNSPECIFIED",
+		"enableCloudLogging": false
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"connectorDetails": {
+		"name": "vertexai",
+		"provider": "gcp",
+		"version": 1
+	},
+	"authConfig": {},
+	"nodeConfig": {
+		"minNodeCount": 2,
+		"maxNodeCount": 50
+	},
+	"destinationConfigs": [
+		{
+			"key": "base_url",
+			"destinations": [
+				{
+					"host": " https://us-central1-aiplatform.googleapis.com/"
+				}
+			]
+		}
+	],
+	"logConfig": {
+		"enabled": true
+	},
+	"sslConfig": {
+		"privateServerCertificate": {},
+		"clientCertificate": {},
+		"clientPrivateKey": {},
+		"clientPrivateKeyPass": {}
+	}
+}

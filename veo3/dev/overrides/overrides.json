@@ -1,0 +1,37 @@
+{
+	"task_overrides": [
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "6",
+			"parameters": {
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "$veoURI$"
+					}
+				}
+			}
+		},
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "7",
+			"parameters": {
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "$veoOperationURI$"
+					}
+				}
+			}
+		}
+	],
+	"integration_overrides": {
+		"runAsServiceAccount": "#SERVICE_ACCOUNT#",
+		"databasePersistencePolicy": "DATABASE_PERSISTENCE_POLICY_UNSPECIFIED",
+		"enableVariableMasking": false,
+		"cloudLoggingDetails": {
+			"cloudLoggingSeverity": "CLOUD_LOGGING_SEVERITY_UNSPECIFIED",
+			"enableCloudLogging": false
+		}
+	}
+}

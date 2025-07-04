@@ -1,0 +1,25 @@
+{
+	"task_overrides": [
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "2",
+			"parameters": {
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "$tasksUri$"
+					}
+				}
+			}
+		}
+	],
+	"integration_overrides": {
+		"runAsServiceAccount": "#SERVICE_ACCOUNT#",
+		"databasePersistencePolicy": "DATABASE_PERSISTENCE_ASYNC",
+		"enableVariableMasking": false,
+		"cloudLoggingDetails": {
+			"cloudLoggingSeverity": "CLOUD_LOGGING_SEVERITY_UNSPECIFIED",
+			"enableCloudLogging": false
+		}
+	}
+}

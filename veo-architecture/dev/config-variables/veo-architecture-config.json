@@ -1,0 +1,7 @@
+{
+	"`CONFIG_queueName`": "#QUEUE_NAME#",
+	"`CONFIG_stateCollection`": "#STATE_COLLECTION#",
+	"`CONFIG_stateDb`": "#STATE_DB#",
+	"`CONFIG_taskIntegrationTriggerId`": "api_trigger/gemini-multimodal_API_1",
+	"`CONFIG_taskIntegration`": "veo3"
+}

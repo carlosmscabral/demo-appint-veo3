@@ -1,0 +1,37 @@
+{
+	"task_overrides": [
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "2",
+			"parameters": {
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "$operationUrl$"
+					}
+				}
+			}
+		},
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "4",
+			"parameters": {
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "https://integrations.googleapis.com/v1/projects/$`ProjectId`$/locations/$`Region`$/integrations/-/executions/$execId$/suspensions/-:lift"
+					}
+				}
+			}
+		}
+	],
+	"integration_overrides": {
+		"runAsServiceAccount": "#SERVICE_ACCOUNT#",
+		"databasePersistencePolicy": "DATABASE_PERSISTENCE_ASYNC",
+		"enableVariableMasking": false,
+		"cloudLoggingDetails": {
+			"cloudLoggingSeverity": "CLOUD_LOGGING_SEVERITY_UNSPECIFIED",
+			"enableCloudLogging": false
+		}
+	}
+}

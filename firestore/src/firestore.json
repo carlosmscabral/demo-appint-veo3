@@ -1,0 +1,319 @@
+{
+	"snapshotNumber": "4",
+	"triggerConfigs": [
+		{
+			"label": "Write Document",
+			"triggerType": "PRIVATE_TRIGGER",
+			"triggerNumber": "2",
+			"triggerId": "private_trigger/firestore_Private_writeDocument",
+			"startTasks": [
+				{
+					"taskId": "2"
+				}
+			],
+			"properties": {
+				"Trigger name": "firestore_Private_writeDocument"
+			}
+		},
+		{
+			"label": "Get Document",
+			"triggerType": "PRIVATE_TRIGGER",
+			"triggerNumber": "3",
+			"triggerId": "private_trigger/firestore_Private_getDocument",
+			"startTasks": [
+				{
+					"taskId": "4"
+				}
+			],
+			"properties": {
+				"Trigger name": "firestore_Private_getDocument"
+			}
+		}
+	],
+	"taskConfigs": [
+		{
+			"task": "GenericConnectorTask",
+			"taskId": "1",
+			"parameters": {
+				"actionName": {
+					"key": "actionName",
+					"value": {
+						"stringValue": "PATCH_v1/%7Bname%7D**notused**f7ccfb60-8020-42e4-8e9b-1909cf021254"
+					}
+				},
+				"authOverrideEnabled": {
+					"key": "authOverrideEnabled",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"connectionName": {
+					"key": "connectionName",
+					"value": {
+						"stringValue": "projects/dynolab-153020/locations/us-east1/connections/firestore"
+					}
+				},
+				"connectionVersion": {
+					"key": "connectionVersion",
+					"value": {
+						"stringValue": "projects/dynolab-153020/locations/global/providers/gcp/connectors/firestore/versions/1"
+					}
+				},
+				"connectorInputPayload": {
+					"key": "connectorInputPayload",
+					"value": {
+						"stringValue": "$`Task_1_connectorInputPayload`$"
+					}
+				},
+				"connectorOutputPayload": {
+					"key": "connectorOutputPayload",
+					"value": {
+						"stringValue": "$`Task_1_connectorOutputPayload`$"
+					}
+				},
+				"operation": {
+					"key": "operation",
+					"value": {
+						"stringValue": "EXECUTE_ACTION"
+					}
+				}
+			},
+			"displayName": "Write Document",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "2",
+			"parameters": {
+				"diagramMetadata": {
+					"key": "diagramMetadata",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/google.protobuf.Struct\",\n  \"value\": {\n    \"0\": {\n      \"inputs\": [{\n        \"name\": \"collectionId\",\n        \"type\": 1.0,\n        \"tokenType\": 0.0\n      }, {\n        \"name\": \"documentPayload\",\n        \"type\": 17.0,\n        \"tokenType\": 0.0\n      }, {\n        \"name\": \"documentId\",\n        \"type\": 1.0,\n        \"tokenType\": 0.0\n      }, {\n        \"name\": \"database\",\n        \"type\": 1.0,\n        \"tokenType\": 0.0\n      }],\n      \"mappings\": [{\n        \"inputs\": [\"database\"],\n        \"output\": \"`Task_1_connectorInputPayload`.Path parameters.name\"\n      }],\n      \"outputs\": [{\n        \"name\": \"`Task_1_connectorInputPayload`\",\n        \"type\": 17.0,\n        \"tokenType\": 0.0\n      }]\n    }\n  }\n}"
+					}
+				},
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\"; // Import additional functions\n\n\nlocal collectionId = f.extVar(\"collectionId\");\nlocal database = f.extVar(\"database\");\nlocal documentId = f.extVar(\"documentId\");\nlocal documentPayload = f.extVar(\"documentPayload\");\nlocal projectId = f.extVar(\"`ProjectId`\");\n\nlocal docPath = \"projects/\"+ projectId + \"/databases/\"+ database + \"/documents/\"+ collectionId + \"/\" + documentId;\n\n\n{\n   \"`Task_1_connectorInputPayload`\": {\n        \"Path parameters\": { \"name\": docPath },\n        \"RequestBody\": {\n            \"name\": docPath,\n            \"fields\": documentPayload,\n        }\n   }\n\n}\n\n\n"
+					}
+				}
+			},
+			"displayName": "Set Write Payload",
+			"nextTasks": [
+				{
+					"taskId": "1"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericConnectorTask",
+			"taskId": "3",
+			"parameters": {
+				"actionName": {
+					"key": "actionName",
+					"value": {
+						"stringValue": "GET_v1/%7Bname%7D**notused**b332d7ee-5511-42ec-8b67-68892be524b7"
+					}
+				},
+				"authOverrideEnabled": {
+					"key": "authOverrideEnabled",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"connectionName": {
+					"key": "connectionName",
+					"value": {
+						"stringValue": "projects/dynolab-153020/locations/us-east1/connections/firestore"
+					}
+				},
+				"connectionVersion": {
+					"key": "connectionVersion",
+					"value": {
+						"stringValue": "projects/dynolab-153020/locations/global/providers/gcp/connectors/firestore/versions/1"
+					}
+				},
+				"connectorInputPayload": {
+					"key": "connectorInputPayload",
+					"value": {
+						"stringValue": "$`Task_3_connectorInputPayload`$"
+					}
+				},
+				"connectorOutputPayload": {
+					"key": "connectorOutputPayload",
+					"value": {
+						"stringValue": "$`Task_3_connectorOutputPayload`$"
+					}
+				},
+				"operation": {
+					"key": "operation",
+					"value": {
+						"stringValue": "EXECUTE_ACTION"
+					}
+				}
+			},
+			"displayName": "Get Document",
+			"nextTasks": [
+				{
+					"taskId": "5"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "4",
+			"parameters": {
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\"; // Import additional functions\n\n\nlocal collectionId = f.extVar(\"collectionId\");\nlocal database = f.extVar(\"database\");\nlocal documentId = f.extVar(\"documentId\");\nlocal projectId = f.extVar(\"`ProjectId`\");\n\nlocal docPath = \"projects/\"+ projectId + \"/databases/\"+ database + \"/documents/\"+ collectionId + \"/\" + documentId;\n\n\n{\n   \"`Task_3_connectorInputPayload`\": {\n        \"Path parameters\": { \"name\": docPath },\n   }\n\n}\n\n\n"
+					}
+				}
+			},
+			"displayName": "Set Get Payload",
+			"nextTasks": [
+				{
+					"taskId": "3"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "5",
+			"parameters": {
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\"; // Import additional functions\n\nlocal firestoreOutput = f.extVar(\"`Task_3_connectorOutputPayload`\");\n\nlocal parsedBody = std.parseJson(firestoreOutput[0].ResponseBody);\n\n// 3. Safely get the 'fields' object. If it doesn't exist, default to an empty object {}.\n// This prevents the script from failing if 'fields' is missing.\nlocal fields = std.get(parsedBody, 'fields', {});\n\n// 4. Dynamically build the new object by iterating through 'fields'.\n// This approach is general and handles any field name and any value type\n// from the list you provided (stringValue, integerValue, booleanValue, etc.).\n// For each field (e.g., \"status\"), it gets its value object (e.g., { \"stringValue\": \"done\" }),\n// finds the type key (\"stringValue\"), and extracts the actual value (\"done\").\nlocal document = {\n  // For each field name in the 'fields' object...\n  [fieldName]:\n    // ...get the corresponding value object...\n    local valueObject = fields[fieldName];\n    // ...find the key inside that object (e.g., \"stringValue\", \"integerValue\").\n    // We assume there's only one key, as per the Firestore document structure.\n    local typeKey = std.objectFields(valueObject)[0];\n    // ...and use that key to extract the final value.\n    valueObject[typeKey]\n  for fieldName in std.objectFields(fields)\n};\n\n{ \n    \"document\": document,\n}"
+					}
+				}
+			},
+			"displayName": "Set final Output",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		}
+	],
+	"integrationParameters": [
+		{
+			"key": "`ExecutionMode`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`ErrorInfo`",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n  \"message\": \"\",\n  \"code\": 0.0\n}"
+			},
+			"isTransient": true,
+			"jsonSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"number\"\n    },\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}"
+		},
+		{
+			"key": "`ExecutionId`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`IntegrationName`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`Region`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`ProjectId`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "database",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "(default)"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "collectionId",
+			"dataType": "STRING_VALUE",
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "documentId",
+			"dataType": "STRING_VALUE",
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "documentPayload",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "`Task_1_connectorInputPayload`",
+			"dataType": "JSON_VALUE",
+			"producer": "1_1",
+			"jsonSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"Path parameters\": {\n      \"type\": \"object\",\n      \"required\": [\"name\"],\n      \"properties\": {\n        \"name\": {\n          \"type\": \"string\",\n          \"description\": \"The resource name of the document, for example `projects/{project_id}/databases/{database_id}/documents/{document_path}`.\"\n        }\n      }\n    },\n    \"Headers\": {\n      \"type\": \"object\",\n      \"required\": [\"x-goog-request-params\"],\n      \"properties\": {\n        \"x-goog-request-params\": {\n          \"type\": \"string\",\n          \"description\": \"Routing parameter with format: project_id\\u003d{project_id}\\u0026database_id\\u003d{database_id}\"\n        }\n      }\n    },\n    \"RequestBody\": {\n      \"type\": \"object\",\n      \"description\": \"A Firestore document. Must not exceed 1 MiB - 4 bytes.\",\n      \"properties\": {\n        \"updateTime\": {\n          \"type\": \"string\",\n          \"description\": \"Output only. The time at which the document was last changed. This value is initially set to the `create_time` then increases monotonically with each change to the document. It can also be compared to values from other documents and the `read_time` of a query.\",\n          \"format\": \"google-datetime\"\n        },\n        \"createTime\": {\n          \"type\": \"string\",\n          \"description\": \"Output only. The time at which the document was created. This value increases monotonically when a document is deleted then recreated. It can also be compared to values from other documents and the `read_time` of a query.\",\n          \"format\": \"google-datetime\"\n        },\n        \"fields\": {\n          \"type\": \"object\"\n        },\n        \"name\": {\n          \"type\": \"string\",\n          \"description\": \"The resource name of the document, for example `projects/{project_id}/databases/{database_id}/documents/{document_path}`.\"\n        }\n      }\n    },\n    \"RequestHasBytes\": {\n      \"type\": \"boolean\",\n      \"description\": \"Indicates if request has bytes\",\n      \"properties\": {\n      }\n    },\n    \"ResponseHasBytes\": {\n      \"type\": \"boolean\",\n      \"description\": \"Indicates if response has bytes\",\n      \"properties\": {\n      }\n    },\n    \"Query parameters\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"updateMask.fieldPaths\": {\n          \"type\": \"string\",\n          \"description\": \"The list of field paths in the mask. See Document.fields for a field path syntax reference.\"\n        },\n        \"currentDocument.exists\": {\n          \"type\": \"boolean\",\n          \"description\": \"When set to `true`, the target document must exist. When set to `false`, the target document must not exist.\"\n        },\n        \"currentDocument.updateTime\": {\n          \"type\": \"string\",\n          \"description\": \"When set, the target document must exist and have been last updated at that time. Timestamp must be microsecond aligned.\",\n          \"format\": \"google-datetime\"\n        },\n        \"mask.fieldPaths\": {\n          \"type\": \"string\",\n          \"description\": \"The list of field paths in the mask. See Document.fields for a field path syntax reference.\"\n        }\n      }\n    }\n  }\n}"
+		},
+		{
+			"key": "`Task_1_connectorOutputPayload`",
+			"dataType": "JSON_VALUE",
+			"isTransient": true,
+			"producer": "1_1",
+			"jsonSchema": "{\n  \"type\": \"array\",\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"Status\": {\n        \"type\": \"number\",\n        \"description\": \"Status Code received.\",\n        \"properties\": {\n        }\n      },\n      \"ResponseBody\": {\n        \"type\": \"string\",\n        \"properties\": {\n        }\n      },\n      \"ResponseHeaders\": {\n        \"type\": \"object\",\n        \"description\": \"Response headers. Will consist of (key,value) and (key, list of value) pairs.\",\n        \"properties\": {\n        }\n      }\n    },\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n  }\n}"
+		},
+		{
+			"key": "`Task_3_connectorInputPayload`",
+			"dataType": "JSON_VALUE",
+			"producer": "1_3",
+			"jsonSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"ResponseHasBytes\": {\n      \"type\": \"boolean\",\n      \"description\": \"Indicates if response has bytes\",\n      \"properties\": {\n      }\n    },\n    \"Query parameters\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"readTime\": {\n          \"type\": \"string\",\n          \"description\": \"Reads the version of the document at the given time. This must be a microsecond precision timestamp within the past one hour, or if Point-in-Time Recovery is enabled, can additionally be a whole minute timestamp within the past 7 days.\",\n          \"format\": \"google-datetime\"\n        },\n        \"transaction\": {\n          \"type\": \"string\",\n          \"description\": \"Reads the document in a transaction.\",\n          \"format\": \"byte\"\n        },\n        \"mask.fieldPaths\": {\n          \"type\": \"string\",\n          \"description\": \"The list of field paths in the mask. See Document.fields for a field path syntax reference.\"\n        }\n      }\n    },\n    \"Path parameters\": {\n      \"type\": \"object\",\n      \"required\": [\"name\"],\n      \"properties\": {\n        \"name\": {\n          \"type\": \"string\",\n          \"description\": \"Required. The resource name of the Document to get. In the format: `projects/{project_id}/databases/{database_id}/documents/{document_path}`.\"\n        }\n      }\n    },\n    \"Headers\": {\n      \"type\": \"object\",\n      \"required\": [\"x-goog-request-params\"],\n      \"properties\": {\n        \"x-goog-request-params\": {\n          \"type\": \"string\",\n          \"description\": \"Routing parameter with format: project_id\\u003d{project_id}\\u0026database_id\\u003d{database_id}\"\n        }\n      }\n    }\n  }\n}"
+		},
+		{
+			"key": "`Task_3_connectorOutputPayload`",
+			"dataType": "JSON_VALUE",
+			"isTransient": true,
+			"producer": "1_3",
+			"jsonSchema": "{\n  \"type\": \"array\",\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ResponseBody\": {\n        \"type\": \"string\",\n        \"properties\": {\n        }\n      },\n      \"ResponseHeaders\": {\n        \"type\": \"object\",\n        \"description\": \"Response headers. Will consist of (key,value) and (key, list of value) pairs.\",\n        \"properties\": {\n        }\n      },\n      \"Status\": {\n        \"type\": \"number\",\n        \"description\": \"Status Code received.\",\n        \"properties\": {\n        }\n      }\n    },\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n  }\n}"
+		},
+		{
+			"key": "document",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			},
+			"inputOutputType": "OUT"
+		}
+	],
+	"databasePersistencePolicy": "DATABASE_PERSISTENCE_ASYNC",
+	"cloudLoggingDetails": {
+		"cloudLoggingSeverity": "",
+		"enableCloudLogging": false
+	}
+}

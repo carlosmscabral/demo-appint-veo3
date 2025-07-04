@@ -1,0 +1,28 @@
+{
+	"connectorDetails": {
+		"name": "firestore",
+		"provider": "gcp",
+		"version": 1
+	},
+	"authConfig": {
+		"additionalVariables": [
+			{
+				"key": "scopes",
+				"stringValue": "https://www.googleapis.com/auth/cloud-platform"
+			}
+		]
+	},
+	"nodeConfig": {
+		"minNodeCount": 2,
+		"maxNodeCount": 50
+	},
+	"logConfig": {
+		"enabled": true
+	},
+	"sslConfig": {
+		"privateServerCertificate": {},
+		"clientCertificate": {},
+		"clientPrivateKey": {},
+		"clientPrivateKeyPass": {}
+	}
+}

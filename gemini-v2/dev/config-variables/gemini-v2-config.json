@@ -1,0 +1,5 @@
+{
+	"`CONFIG_vertex-connection-name`": "projects/#PROJECT_ID#/locations/#REGION#/connections/vertex-1",
+	"`CONFIG_vertex-project`": "#PROJECT_ID#",
+	"`CONFIG_vertex-region`": "us-central1"
+}

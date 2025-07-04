@@ -1,0 +1,716 @@
+{
+	"snapshotNumber": "8",
+	"triggerConfigs": [
+		{
+			"label": "Main API Trigger",
+			"triggerType": "API",
+			"triggerNumber": "1",
+			"triggerId": "api_trigger/poll-operation-resume-suspend_API_1",
+			"startTasks": [
+				{
+					"taskId": "6"
+				}
+			],
+			"properties": {
+				"Trigger name": "poll-operation-resume-suspend_API_1"
+			}
+		},
+		{
+			"label": "Secondary API Trigger",
+			"triggerType": "API",
+			"triggerNumber": "2",
+			"triggerId": "api_trigger/poll-operation-resume-suspend_API_2",
+			"startTasks": [
+				{
+					"taskId": "7"
+				}
+			],
+			"properties": {
+				"Trigger name": "poll-operation-resume-suspend_API_2"
+			}
+		}
+	],
+	"taskConfigs": [
+		{
+			"task": "TimerTask",
+			"taskId": "1",
+			"parameters": {
+				"maxSuspensionTime": {
+					"key": "maxSuspensionTime",
+					"value": {
+						"stringValue": "$timeToWait$"
+					}
+				},
+				"unit": {
+					"key": "unit",
+					"value": {
+						"stringValue": "seconds"
+					}
+				}
+			},
+			"displayName": "Timer",
+			"nextTasks": [
+				{
+					"taskId": "2"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ANY_SUCCEED",
+			"successPolicy": {
+				"finalState": "SUSPENDED"
+			},
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "2",
+			"parameters": {
+				"additionalHeaders": {
+					"key": "additionalHeaders",
+					"value": {}
+				},
+				"authConfigName": {
+					"key": "authConfigName",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"disableSSLValidation": {
+					"key": "disableSSLValidation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"followRedirects": {
+					"key": "followRedirects",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"httpMethod": {
+					"key": "httpMethod",
+					"value": {
+						"stringValue": "POST"
+					}
+				},
+				"httpParams": {
+					"key": "httpParams",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"content-type\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"application/json\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"jsonAdditionalHeaders": {
+					"key": "jsonAdditionalHeaders",
+					"value": {
+						"jsonValue": "null"
+					}
+				},
+				"requestBody": {
+					"key": "requestBody",
+					"value": {
+						"stringValue": "$operationBody$"
+					}
+				},
+				"requestorId": {
+					"key": "requestorId",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"responseBody": {
+					"key": "responseBody",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_2_responseBody`$"
+							]
+						}
+					}
+				},
+				"responseHeader": {
+					"key": "responseHeader",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_2_responseHeader`$"
+							]
+						}
+					}
+				},
+				"responseStatus": {
+					"key": "responseStatus",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_2_responseStatus`$"
+							]
+						}
+					}
+				},
+				"throwError": {
+					"key": "throwError",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"timeout": {
+					"key": "timeout",
+					"value": {
+						"intValue": "0"
+					}
+				},
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "$operationUrl$"
+					}
+				},
+				"urlFetchingService": {
+					"key": "urlFetchingService",
+					"value": {
+						"stringValue": "HARPOON"
+					}
+				},
+				"urlQueryStrings": {
+					"key": "urlQueryStrings",
+					"value": {}
+				},
+				"useSSL": {
+					"key": "useSSL",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"userAgent": {
+					"key": "userAgent",
+					"value": {
+						"stringValue": ""
+					}
+				}
+			},
+			"displayName": "Get Operation Status",
+			"nextTasks": [
+				{
+					"taskId": "3"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"conditionalFailurePolicies": {
+				"defaultFailurePolicy": {
+					"retryStrategy": "EXPONENTIAL_BACKOFF",
+					"maxRetries": 2,
+					"intervalTime": "1970-01-01T00:00:02Z"
+				}
+			},
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "3",
+			"parameters": {
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\";\n\nlocal resp = std.parseJson(std.extVar(\"`Task_2_responseBody`\"));\n\n// operationComplete is now only dependent on the 'done' field.\nlocal operationComplete =\n  if std.objectHas(resp, 'done') then resp.done else false;\n\n// suspensionResultString logic separately checks for the GCS URI.\nlocal suspensionResultString =\n  // Check if the full path to gcsUri exists and is not null\n  if std.objectHas(resp, 'response') \u0026\u0026 resp.response != null \u0026\u0026\n     std.objectHas(resp.response, 'videos') \u0026\u0026 std.length(resp.response.videos) \u003e 0 \u0026\u0026\n     std.objectHas(resp.response.videos[0], 'gcsUri') \u0026\u0026 resp.response.videos[0].gcsUri != null\n  then\n    resp.response.videos[0].gcsUri\n  else\n    \"error\";\n\nlocal suspensionBody = {\n  suspensionResult: suspensionResultString\n};\n\n{\n  operationComplete: operationComplete,\n  suspensionBody: suspensionBody,\n}\n\n"
+					}
+				}
+			},
+			"displayName": "Parse Operation Status",
+			"nextTasks": [
+				{
+					"taskId": "4",
+					"condition": "$operationComplete$ = true",
+					"displayName": "Completed"
+				},
+				{
+					"taskId": "5",
+					"condition": "$operationComplete$ = false AND $incomingTrigger$ = \"primary\"",
+					"displayName": "Not Completed Primary"
+				},
+				{
+					"taskId": "8",
+					"condition": "$operationComplete$ = false AND $incomingTrigger$ = \"secondary\"",
+					"displayName": "Not Completed Secondary"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "4",
+			"parameters": {
+				"additionalHeaders": {
+					"key": "additionalHeaders",
+					"value": {}
+				},
+				"authConfigName": {
+					"key": "authConfigName",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"disableSSLValidation": {
+					"key": "disableSSLValidation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"followRedirects": {
+					"key": "followRedirects",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"httpMethod": {
+					"key": "httpMethod",
+					"value": {
+						"stringValue": "POST"
+					}
+				},
+				"httpParams": {
+					"key": "httpParams",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"content-type\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"application/json\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"jsonAdditionalHeaders": {
+					"key": "jsonAdditionalHeaders",
+					"value": {
+						"jsonValue": "null"
+					}
+				},
+				"requestBody": {
+					"key": "requestBody",
+					"value": {
+						"stringValue": "$suspensionBody$"
+					}
+				},
+				"requestorId": {
+					"key": "requestorId",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"responseBody": {
+					"key": "responseBody",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_4_responseBody`$"
+							]
+						}
+					}
+				},
+				"responseHeader": {
+					"key": "responseHeader",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_4_responseHeader`$"
+							]
+						}
+					}
+				},
+				"responseStatus": {
+					"key": "responseStatus",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_4_responseStatus`$"
+							]
+						}
+					}
+				},
+				"throwError": {
+					"key": "throwError",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"timeout": {
+					"key": "timeout",
+					"value": {
+						"intValue": "0"
+					}
+				},
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "https://integrations.googleapis.com/v1/projects/$`ProjectId`$/locations/$`Region`$/integrations/-/executions/$execId$/suspensions/-:lift"
+					}
+				},
+				"urlFetchingService": {
+					"key": "urlFetchingService",
+					"value": {
+						"stringValue": "HARPOON"
+					}
+				},
+				"urlQueryStrings": {
+					"key": "urlQueryStrings",
+					"value": {}
+				},
+				"useSSL": {
+					"key": "useSSL",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"userAgent": {
+					"key": "userAgent",
+					"value": {
+						"stringValue": ""
+					}
+				}
+			},
+			"displayName": "Lift Suspension",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"conditionalFailurePolicies": {
+				"defaultFailurePolicy": {
+					"retryStrategy": "EXPONENTIAL_BACKOFF",
+					"maxRetries": 2,
+					"intervalTime": "1970-01-01T00:00:02Z"
+				}
+			},
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "SubWorkflowExecutorV2Task",
+			"taskId": "5",
+			"parameters": {
+				"disableEUCPropagation": {
+					"key": "disableEUCPropagation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"executionIds": {
+					"key": "executionIds",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_5_executionIds`$"
+							]
+						}
+					}
+				},
+				"executionStrategy": {
+					"key": "executionStrategy",
+					"value": {
+						"stringValue": "ASYNC"
+					}
+				},
+				"inputMap": {
+					"key": "inputMap",
+					"value": {
+						"stringArray": {}
+					}
+				},
+				"overrideParamsMap": {
+					"key": "overrideParamsMap",
+					"value": {
+						"stringArray": {}
+					}
+				},
+				"requestParamsMap": {
+					"key": "requestParamsMap",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationUrl\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationUrl\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"timeToWait\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"timeToWait\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"execId\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"execId\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationBody\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationBody\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"responseParamsMap": {
+					"key": "responseParamsMap",
+					"value": {}
+				},
+				"timeInMsToSchedule": {
+					"key": "timeInMsToSchedule",
+					"value": {
+						"intValue": "100"
+					}
+				},
+				"triggerId": {
+					"key": "triggerId",
+					"value": {
+						"stringValue": "api_trigger/poll-operation-resume-suspend_API_2"
+					}
+				},
+				"workflowName": {
+					"key": "workflowName",
+					"value": {
+						"stringValue": "poll-veo"
+					}
+				}
+			},
+			"displayName": "Keep Pooling Secondary",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "6",
+			"parameters": {
+				"diagramMetadata": {
+					"key": "diagramMetadata",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/google.protobuf.Struct\",\n  \"value\": {\n    \"0\": {\n      \"outputs\": [{\n        \"name\": \"incomingTrigger\",\n        \"type\": 1.0,\n        \"tokenType\": 0.0\n      }],\n      \"inputs\": [{\n        \"name\": \"trigger\",\n        \"value\": \"primary\",\n        \"type\": 1.0,\n        \"tokenType\": 2.0\n      }],\n      \"mappings\": [{\n        \"inputs\": [\"trigger\"],\n        \"output\": \"incomingTrigger\"\n      }]\n    }\n  }\n}"
+					}
+				},
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\";\nlocal inputs = {\"trigger\": \"primary\"};\n{\"incomingTrigger\": inputs[\"trigger\"]}"
+					}
+				}
+			},
+			"displayName": "Set Primary",
+			"nextTasks": [
+				{
+					"taskId": "1"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "7",
+			"parameters": {
+				"diagramMetadata": {
+					"key": "diagramMetadata",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/google.protobuf.Struct\",\n  \"value\": {\n    \"0\": {\n      \"outputs\": [{\n        \"name\": \"incomingTrigger\",\n        \"type\": 1.0,\n        \"tokenType\": 0.0\n      }],\n      \"inputs\": [{\n        \"name\": \"trigger\",\n        \"type\": 1.0,\n        \"value\": \"secondary\",\n        \"tokenType\": 2.0\n      }],\n      \"mappings\": [{\n        \"inputs\": [\"trigger\"],\n        \"output\": \"incomingTrigger\"\n      }]\n    }\n  }\n}"
+					}
+				},
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\";\nlocal inputs = {\"trigger\": \"secondary\"};\n{\"incomingTrigger\": inputs[\"trigger\"]}"
+					}
+				}
+			},
+			"displayName": "Set Secondary",
+			"nextTasks": [
+				{
+					"taskId": "1"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "SubWorkflowExecutorV2Task",
+			"taskId": "8",
+			"parameters": {
+				"disableEUCPropagation": {
+					"key": "disableEUCPropagation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"executionIds": {
+					"key": "executionIds",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_8_executionIds`$"
+							]
+						}
+					}
+				},
+				"executionStrategy": {
+					"key": "executionStrategy",
+					"value": {
+						"stringValue": "ASYNC"
+					}
+				},
+				"inputMap": {
+					"key": "inputMap",
+					"value": {
+						"stringArray": {}
+					}
+				},
+				"overrideParamsMap": {
+					"key": "overrideParamsMap",
+					"value": {
+						"stringArray": {}
+					}
+				},
+				"requestParamsMap": {
+					"key": "requestParamsMap",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationUrl\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationUrl\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"timeToWait\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"timeToWait\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"execId\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"execId\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationBody\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationBody\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"responseParamsMap": {
+					"key": "responseParamsMap",
+					"value": {}
+				},
+				"timeInMsToSchedule": {
+					"key": "timeInMsToSchedule",
+					"value": {
+						"intValue": "100"
+					}
+				},
+				"triggerId": {
+					"key": "triggerId",
+					"value": {
+						"stringValue": "api_trigger/poll-operation-resume-suspend_API_1"
+					}
+				},
+				"workflowName": {
+					"key": "workflowName",
+					"value": {
+						"stringValue": "poll-veo"
+					}
+				}
+			},
+			"displayName": "Keep Pooling Primary",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		}
+	],
+	"integrationParameters": [
+		{
+			"key": "`ExecutionMode`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`ErrorInfo`",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n  \"message\": \"\",\n  \"code\": 0.0\n}"
+			},
+			"isTransient": true,
+			"jsonSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"number\"\n    },\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}"
+		},
+		{
+			"key": "`ExecutionId`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`IntegrationName`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`Region`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`ProjectId`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "timeToWait",
+			"dataType": "INT_VALUE",
+			"defaultValue": {
+				"intValue": "10"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "`Task_2_responseHeader`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_2"
+		},
+		{
+			"key": "`Task_2_responseBody`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_2"
+		},
+		{
+			"key": "`Task_2_responseStatus`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_2"
+		},
+		{
+			"key": "operationUrl",
+			"dataType": "STRING_VALUE",
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "operationComplete",
+			"dataType": "BOOLEAN_VALUE"
+		},
+		{
+			"key": "`Task_4_responseHeader`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_4"
+		},
+		{
+			"key": "`Task_4_responseBody`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_4"
+		},
+		{
+			"key": "`Task_4_responseStatus`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_4"
+		},
+		{
+			"key": "`Task_5_executionIds`",
+			"dataType": "STRING_ARRAY",
+			"isTransient": true,
+			"producer": "1_5"
+		},
+		{
+			"key": "incomingTrigger",
+			"dataType": "STRING_VALUE"
+		},
+		{
+			"key": "`Task_8_executionIds`",
+			"dataType": "STRING_ARRAY",
+			"isTransient": true,
+			"producer": "1_8"
+		},
+		{
+			"key": "operationBody",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "execId",
+			"dataType": "STRING_VALUE",
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "suspensionBody",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			}
+		}
+	],
+	"databasePersistencePolicy": "DATABASE_PERSISTENCE_ASYNC",
+	"cloudLoggingDetails": {
+		"cloudLoggingSeverity": "CLOUD_LOGGING_SEVERITY_UNSPECIFIED",
+		"enableCloudLogging": false
+	}
+}

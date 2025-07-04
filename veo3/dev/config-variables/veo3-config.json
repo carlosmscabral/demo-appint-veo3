@@ -1,0 +1,4 @@
+{
+	"`CONFIG_stateCollection`": "#STATE_COLLECTION#",
+	"`CONFIG_stateDb`": "#STATE_DB#"
+}

@@ -1,0 +1,123 @@
+:root {
+  --background-color: #121212;
+  --surface-color: #1e1e1e;
+  --primary-color: #3f51b5;
+  --on-primary-color: #ffffff;
+  --text-color: #e0e0e0;
+  --border-color: #333333;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2.5em;
+  margin-bottom: 1em;
+  color: var(--on-primary-color);
+}
+
+#video-form {
+  background-color: var(--surface-color);
+  padding: 2em;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+
+#video-form div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+label {
+  font-weight: 500;
+  font-size: 1.1em;
+}
+
+input[type='file'],
+input[type='text'],
+textarea {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.8em;
+  font-size: 1em;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type='file']::file-selector-button {
+  background-color: var(--primary-color);
+  color: var(--on-primary-color);
+  border: none;
+  padding: 0.8em 1em;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+input[type='file']::file-selector-button:hover {
+  background-color: #303f9f;
+}
+
+input[type='text']:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.3);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+button[type='submit'] {
+  background-color: var(--primary-color);
+  color: var(--on-primary-color);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 1em;
+  font-size: 1.1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button[type='submit']:hover {
+  background-color: #303f9f;
+  transform: translateY(-2px);
+}
+
+#status {
+  margin-top: 2em;
+  font-size: 1.2em;
+  font-weight: 500;
+  text-align: center;
+  min-height: 1.5em;
+}
+
+#video-player {
+  margin-top: 2em;
+  width: 100%;
+  max-width: 800px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}

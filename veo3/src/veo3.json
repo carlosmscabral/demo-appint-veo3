@@ -1,0 +1,862 @@
+{
+	"snapshotNumber": "7",
+	"triggerConfigs": [
+		{
+			"label": "Private Trigger",
+			"triggerType": "PRIVATE_TRIGGER",
+			"triggerNumber": "1",
+			"triggerId": "private_trigger/gemini-multimodal_Private_1",
+			"startTasks": [
+				{
+					"taskId": "4"
+				}
+			],
+			"properties": {
+				"Trigger name": "gemini-multimodal_Private_1"
+			}
+		},
+		{
+			"label": "Generate Image",
+			"triggerType": "API",
+			"triggerNumber": "2",
+			"triggerId": "api_trigger/gemini-multimodal_API_1",
+			"startTasks": [
+				{
+					"taskId": "4"
+				}
+			],
+			"properties": {
+				"Trigger name": "gemini-multimodal_API_1"
+			}
+		},
+		{
+			"label": "Check Video Gen Status",
+			"triggerType": "API",
+			"triggerNumber": "3",
+			"triggerId": "api_trigger/veo3_API_1",
+			"startTasks": [
+				{
+					"taskId": "8"
+				}
+			],
+			"properties": {
+				"Trigger name": "veo3_API_1"
+			}
+		}
+	],
+	"taskConfigs": [
+		{
+			"task": "SuspendTask",
+			"taskId": "10",
+			"parameters": {
+				"maxSuspensionTime": {
+					"key": "maxSuspensionTime",
+					"value": {
+						"intValue": "44640"
+					}
+				},
+				"suspensionId": {
+					"key": "suspensionId",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_10_suspensionId`$"
+							]
+						}
+					}
+				},
+				"suspensionResult": {
+					"key": "suspensionResult",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_10_suspensionResult`$"
+							]
+						}
+					}
+				}
+			},
+			"displayName": "Wait for Conclusion",
+			"nextTasks": [
+				{
+					"taskId": "14"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"successPolicy": {
+				"finalState": "SUSPENDED"
+			},
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "12",
+			"parameters": {
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\"; // Import additional functions\n\nlocal veoResp = std.parseJson(f.extVar(\"`Task_6_responseBody`\"));\n\n{\n    \"pollBody\" : {\n        \"operationName\": veoResp.name,\n    }\n\n}\n\n"
+					}
+				}
+			},
+			"displayName": "Set Poll Payload",
+			"nextTasks": [
+				{
+					"taskId": "9"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "SubWorkflowExecutorV2Task",
+			"taskId": "13",
+			"parameters": {
+				"disableEUCPropagation": {
+					"key": "disableEUCPropagation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"executionIds": {
+					"key": "executionIds",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_13_executionIds`$"
+							]
+						}
+					}
+				},
+				"executionStrategy": {
+					"key": "executionStrategy",
+					"value": {
+						"stringValue": "SYNC"
+					}
+				},
+				"inputMap": {
+					"key": "inputMap",
+					"value": {
+						"stringArray": {}
+					}
+				},
+				"overrideParamsMap": {
+					"key": "overrideParamsMap",
+					"value": {
+						"stringArray": {}
+					}
+				},
+				"requestParamsMap": {
+					"key": "requestParamsMap",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"stateCollection\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"collectionId\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"stateDb\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"database\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"stateDocName\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"documentId\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"documentPayload\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"documentPayload\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"responseParamsMap": {
+					"key": "responseParamsMap",
+					"value": {}
+				},
+				"timeInMsToSchedule": {
+					"key": "timeInMsToSchedule",
+					"value": {
+						"intValue": "0"
+					}
+				},
+				"triggerId": {
+					"key": "triggerId",
+					"value": {
+						"stringValue": "private_trigger/firestore_Private_writeDocument"
+					}
+				},
+				"workflowName": {
+					"key": "workflowName",
+					"value": {
+						"stringValue": "firestore"
+					}
+				}
+			},
+			"displayName": "Update State",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "14",
+			"parameters": {
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\";\n\nlocal configStateDb = f.extVar(\"`CONFIG_stateDb`\");\nlocal configStateCollection = f.extVar(\"`CONFIG_stateCollection`\");\nlocal uuid = f.extVar(\"uuid\");\nlocal suspensionResult = f.extVar(\"`Task_10_suspensionResult`\");\n\nlocal documentPayload =\n  if suspensionResult == \"error\" then\n    {\n      status: {\n        stringValue: \"error\",\n      },\n    }\n  else\n    {\n      status: {\n        stringValue: \"done\",\n      },\n      gcsURI: {\n        stringValue: suspensionResult,\n      },\n    };\n\n{\n  stateDocName: uuid,\n  stateDb: configStateDb,\n  stateCollection: configStateCollection,\n  documentPayload: documentPayload,\n}\n"
+					}
+				}
+			},
+			"displayName": "Set State",
+			"nextTasks": [
+				{
+					"taskId": "13"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "JsonnetMapperTask",
+			"taskId": "4",
+			"parameters": {
+				"template": {
+					"key": "template",
+					"value": {
+						"stringValue": "local f = import \"functions\";\n\n\n// Reading variables for the API endpoint\nlocal project = std.extVar(\"`CONFIG_vertex-project`\");\nlocal region = std.extVar(\"`CONFIG_vertex-region`\");\nlocal modelId = std.extVar(\"model-name\"); // e.g., \"veo-3-4k\"\n\n// Input content variables\nlocal prompt = std.extVar(\"prompt\");\nlocal inlineData = std.extVar(\"inlineData\"); // Expects a base64 encoded string for the initial image\nlocal mimeType = std.extVar(\"mimeType\"); // Mime type for the inlineData\n\n// Video generation parameters\nlocal storageUri = std.extVar(\"storageURI\"); // GCS URI for the output video\n\n\n// Constructing the body of the request for the Veo3 API\nlocal body = {\n  \"instances\": [\n    {\n      \"prompt\": prompt,\n      \"image\": {\n        \"bytesBase64Encoded\": inlineData,\n        \"mimeType\": mimeType,\n      },\n    },\n  ],\n  \"parameters\": {\n    \"enhancePrompt\": true,\n    // \"generateAudio\": true,\n    \"sampleCount\": 1,\n    \"storageUri\": storageUri,\n  },\n};\n\n// Final payload for the Vertex AI connector\n{\n  \"veoBody\": body,\n}"
+					}
+				}
+			},
+			"displayName": "Prep Veo Request",
+			"nextTasks": [
+				{
+					"taskId": "6"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"successPolicy": {},
+			"conditionalFailurePolicies": {
+				"failurePolicies": [
+					{
+						"condition": "$`ExecutionMode`$ = SYNC"
+					},
+					{
+						"condition": "$`ExecutionMode`$ = ASYNC"
+					}
+				]
+			},
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "6",
+			"parameters": {
+				"additionalHeaders": {
+					"key": "additionalHeaders",
+					"value": {}
+				},
+				"disableSSLValidation": {
+					"key": "disableSSLValidation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"followRedirects": {
+					"key": "followRedirects",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"httpMethod": {
+					"key": "httpMethod",
+					"value": {
+						"stringValue": "POST"
+					}
+				},
+				"httpParams": {
+					"key": "httpParams",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"content-type\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"application/json\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"jsonAdditionalHeaders": {
+					"key": "jsonAdditionalHeaders",
+					"value": {
+						"jsonValue": "null"
+					}
+				},
+				"requestBody": {
+					"key": "requestBody",
+					"value": {
+						"stringValue": "$veoBody$"
+					}
+				},
+				"requestorId": {
+					"key": "requestorId",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"responseBody": {
+					"key": "responseBody",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_6_responseBody`$"
+							]
+						}
+					}
+				},
+				"responseHeader": {
+					"key": "responseHeader",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_6_responseHeader`$"
+							]
+						}
+					}
+				},
+				"responseStatus": {
+					"key": "responseStatus",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_6_responseStatus`$"
+							]
+						}
+					}
+				},
+				"throwError": {
+					"key": "throwError",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"timeout": {
+					"key": "timeout",
+					"value": {
+						"intValue": "0"
+					}
+				},
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "$veoURI$"
+					}
+				},
+				"urlFetchingService": {
+					"key": "urlFetchingService",
+					"value": {
+						"stringValue": "HARPOON"
+					}
+				},
+				"urlQueryStrings": {
+					"key": "urlQueryStrings",
+					"value": {}
+				},
+				"useSSL": {
+					"key": "useSSL",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"userAgent": {
+					"key": "userAgent",
+					"value": {
+						"stringValue": ""
+					}
+				}
+			},
+			"displayName": "Invoke Veo3",
+			"nextTasks": [
+				{
+					"taskId": "12"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"conditionalFailurePolicies": {
+				"defaultFailurePolicy": {
+					"retryStrategy": "EXPONENTIAL_BACKOFF"
+				}
+			},
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericRestV2Task",
+			"taskId": "7",
+			"parameters": {
+				"additionalHeaders": {
+					"key": "additionalHeaders",
+					"value": {}
+				},
+				"authConfigName": {
+					"key": "authConfigName",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"disableSSLValidation": {
+					"key": "disableSSLValidation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"followRedirects": {
+					"key": "followRedirects",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"httpMethod": {
+					"key": "httpMethod",
+					"value": {
+						"stringValue": "POST"
+					}
+				},
+				"httpParams": {
+					"key": "httpParams",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"content-type\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"application/json\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"jsonAdditionalHeaders": {
+					"key": "jsonAdditionalHeaders",
+					"value": {
+						"jsonValue": "null"
+					}
+				},
+				"requestBody": {
+					"key": "requestBody",
+					"value": {
+						"stringValue": "$veoOperationPayload$"
+					}
+				},
+				"requestorId": {
+					"key": "requestorId",
+					"value": {
+						"stringValue": ""
+					}
+				},
+				"responseBody": {
+					"key": "responseBody",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_7_responseBody`$"
+							]
+						}
+					}
+				},
+				"responseHeader": {
+					"key": "responseHeader",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_7_responseHeader`$"
+							]
+						}
+					}
+				},
+				"responseStatus": {
+					"key": "responseStatus",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_7_responseStatus`$"
+							]
+						}
+					}
+				},
+				"throwError": {
+					"key": "throwError",
+					"value": {
+						"booleanValue": true
+					}
+				},
+				"timeout": {
+					"key": "timeout",
+					"value": {
+						"intValue": "0"
+					}
+				},
+				"url": {
+					"key": "url",
+					"value": {
+						"stringValue": "$veoOperationURI$"
+					}
+				},
+				"urlFetchingService": {
+					"key": "urlFetchingService",
+					"value": {
+						"stringValue": "HARPOON"
+					}
+				},
+				"urlQueryStrings": {
+					"key": "urlQueryStrings",
+					"value": {}
+				},
+				"useSSL": {
+					"key": "useSSL",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"userAgent": {
+					"key": "userAgent",
+					"value": {
+						"stringValue": ""
+					}
+				}
+			},
+			"displayName": "Check Video Status",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"conditionalFailurePolicies": {
+				"defaultFailurePolicy": {
+					"retryStrategy": "EXPONENTIAL_BACKOFF"
+				}
+			},
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "FieldMappingTask",
+			"taskId": "8",
+			"parameters": {
+				"FieldMappingConfigTaskParameterKey": {
+					"key": "FieldMappingConfigTaskParameterKey",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.FieldMappingConfig\",\n  \"mappedFields\": [{\n    \"inputField\": {\n      \"fieldType\": \"STRING_VALUE\",\n      \"transformExpression\": {\n        \"initialValue\": {\n          \"referenceValue\": \"$veoOperationPayload$\"\n        },\n        \"transformationFunctions\": [{\n          \"functionType\": {\n            \"stringFunction\": {\n              \"functionName\": \"RESOLVE_TEMPLATE\"\n            }\n          }\n        }]\n      }\n    },\n    \"outputField\": {\n      \"referenceKey\": \"$veoOperationPayload$\",\n      \"fieldType\": \"STRING_VALUE\",\n      \"cardinality\": \"OPTIONAL\"\n    }\n  }]\n}"
+					}
+				}
+			},
+			"displayName": "Data Mapping",
+			"nextTasks": [
+				{
+					"taskId": "7"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "SubWorkflowExecutorV2Task",
+			"taskId": "9",
+			"parameters": {
+				"disableEUCPropagation": {
+					"key": "disableEUCPropagation",
+					"value": {
+						"booleanValue": false
+					}
+				},
+				"executionIds": {
+					"key": "executionIds",
+					"value": {
+						"stringArray": {
+							"stringValues": [
+								"$`Task_9_executionIds`$"
+							]
+						}
+					}
+				},
+				"executionStrategy": {
+					"key": "executionStrategy",
+					"value": {
+						"stringValue": "ASYNC"
+					}
+				},
+				"inputMap": {
+					"key": "inputMap",
+					"value": {
+						"stringArray": {}
+					}
+				},
+				"overrideParamsMap": {
+					"key": "overrideParamsMap",
+					"value": {
+						"stringArray": {}
+					}
+				},
+				"requestParamsMap": {
+					"key": "requestParamsMap",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.ParameterMap\",\n  \"entries\": [{\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"`ExecutionId`\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"execId\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"pollBody\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationBody\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"veoOperationURI\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"operationUrl\"\n      }\n    }\n  }, {\n    \"key\": {\n      \"literalValue\": {\n        \"stringValue\": \"pollTime\"\n      }\n    },\n    \"value\": {\n      \"literalValue\": {\n        \"stringValue\": \"timeToWait\"\n      }\n    }\n  }]\n}"
+					}
+				},
+				"responseParamsMap": {
+					"key": "responseParamsMap",
+					"value": {}
+				},
+				"timeInMsToSchedule": {
+					"key": "timeInMsToSchedule",
+					"value": {
+						"intValue": "0"
+					}
+				},
+				"triggerId": {
+					"key": "triggerId",
+					"value": {
+						"stringValue": "api_trigger/poll-operation-resume-suspend_API_1"
+					}
+				},
+				"workflowName": {
+					"key": "workflowName",
+					"value": {
+						"stringValue": "poll-veo"
+					}
+				}
+			},
+			"displayName": "Poll Operation",
+			"nextTasks": [
+				{
+					"taskId": "10"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		}
+	],
+	"integrationParameters": [
+		{
+			"key": "prompt",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "`ExecutionMode`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`ErrorInfo`",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n  \"message\": \"\",\n  \"code\": 0.0\n}"
+			},
+			"isTransient": true,
+			"jsonSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"number\"\n    },\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}"
+		},
+		{
+			"key": "`ExecutionId`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`IntegrationName`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`Region`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "`ProjectId`",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"isTransient": true
+		},
+		{
+			"key": "output",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {},
+			"inputOutputType": "OUT"
+		},
+		{
+			"key": "inlineData",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "`Task_6_responseHeader`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_6"
+		},
+		{
+			"key": "`Task_6_responseStatus`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_6"
+		},
+		{
+			"key": "veoBody",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			}
+		},
+		{
+			"key": "mimeType",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "image/jpeg"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "model-name",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "veo-2.0-generate-001"
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "veoURI",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "https://us-central1-aiplatform.googleapis.com/v1/projects/dynolab-153020/locations/us-central1/publishers/google/models/veo-2.0-generate-001:predictLongRunning"
+			}
+		},
+		{
+			"key": "`Task_7_responseHeader`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_7"
+		},
+		{
+			"key": "`Task_7_responseStatus`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_7"
+		},
+		{
+			"key": "veoOperationURI",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "https://us-central1-aiplatform.googleapis.com/v1/projects/dynolab-153020/locations/us-central1/publishers/google/models/veo-2.0-generate-001:fetchPredictOperation"
+			}
+		},
+		{
+			"key": "operationInput",
+			"dataType": "STRING_VALUE",
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "veoOperationPayload",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "{\n  \"operationName\": \"$operationInput$\"\n}"
+			}
+		},
+		{
+			"key": "`Task_6_responseBody`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"inputOutputType": "OUT",
+			"producer": "1_6"
+		},
+		{
+			"key": "`Task_7_responseBody`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"inputOutputType": "OUT",
+			"producer": "1_7"
+		},
+		{
+			"key": "storageURI",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			},
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "`Task_9_executionIds`",
+			"dataType": "STRING_ARRAY",
+			"isTransient": true,
+			"producer": "1_9"
+		},
+		{
+			"key": "pollTime",
+			"dataType": "INT_VALUE",
+			"defaultValue": {
+				"intValue": "10"
+			}
+		},
+		{
+			"key": "`Task_10_suspensionResult`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_10"
+		},
+		{
+			"key": "`Task_10_suspensionId`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_10"
+		},
+		{
+			"key": "pollBody",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			}
+		},
+		{
+			"key": "uuid",
+			"dataType": "STRING_VALUE",
+			"inputOutputType": "IN"
+		},
+		{
+			"key": "`Task_13_executionIds`",
+			"dataType": "STRING_ARRAY",
+			"isTransient": true,
+			"producer": "1_13"
+		},
+		{
+			"key": "stateDb",
+			"dataType": "STRING_VALUE"
+		},
+		{
+			"key": "stateCollection",
+			"dataType": "STRING_VALUE"
+		},
+		{
+			"key": "stateDocName",
+			"dataType": "STRING_VALUE"
+		},
+		{
+			"key": "documentPayload",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n}"
+			}
+		}
+	],
+	"integrationConfigParameters": [
+		{
+			"parameter": {
+				"key": "`CONFIG_stateDb`",
+				"dataType": "STRING_VALUE",
+				"defaultValue": {
+					"stringValue": "veo3"
+				},
+				"displayName": "`CONFIG_stateDb`"
+			},
+			"value": {
+				"stringValue": "veo3"
+			}
+		},
+		{
+			"parameter": {
+				"key": "`CONFIG_stateCollection`",
+				"dataType": "STRING_VALUE",
+				"defaultValue": {
+					"stringValue": ""
+				},
+				"displayName": "`CONFIG_stateCollection`"
+			},
+			"value": {
+				"stringValue": ""
+			}
+		}
+	],
+	"databasePersistencePolicy": "",
+	"cloudLoggingDetails": {
+		"cloudLoggingSeverity": "CLOUD_LOGGING_SEVERITY_UNSPECIFIED",
+		"enableCloudLogging": false
+	}
+}
