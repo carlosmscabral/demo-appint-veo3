@@ -10,33 +10,58 @@ The entire infrastructure and application deployment process is automated with a
 
 ## 🏗️ Architecture
 
-The architecture is designed to be scalable, resilient, and fully serverless.
+The architecture is designed to be scalable, resilient, and fully serverless, handling a synchronous initial request and a long-running asynchronous processing workflow.
 
 ```mermaid
 graph TD
     subgraph User Interaction
-        A[🌐 Web App on Cloud Run] -->|1. Upload Video| B(Cloud Storage);
+        WebApp[Web App on Cloud Run]
     end
 
-    subgraph Backend Orchestration
-        B -->|2. Trigger| C{VEO Architecture Integration};
-        C -->|3. Create Task| D[📨 Cloud Tasks Queue];
-        C -->|4. Persist State| E[🗂️ Firestore Database];
+    subgraph Backend Processing
+        subgraph Orchestration Core
+            Main[veo-architecture]
+            Gemini[gemini-v2]
+            Firestore[firestore]
+            TaskQueue[add-task-queue]
+        end
 
-        D -->|5. Execute| F(VEO & Gemini Models);
-        F -->|6. Poll for Results| G(Poll VEO Integration);
-        G -->|7. Update State| E;
+        subgraph Async VEO Processing
+            VEO3[veo3]
+            Poll[poll-veo]
+            VEO_API[VEO3 Endpoint]
+        end
     end
 
-    A -->|Displays Status| E;
+    WebApp -- "(1) Submits Video Request" --> Main;
+    Main -- "(2) Creates initial record" --> Firestore;
+    Main -- "(3) Returns Job ID" --> WebApp;
+    WebApp -.->|"(4) Polls for Status"| Main;
+    Main -- "(13) Reads status from" --> Firestore;
+
+    Main -- "(5) Enhances prompt" --> Gemini;
+    Main -- "(6) Creates async task" --> TaskQueue;
+    TaskQueue -- "(7) Triggers VEO integration" --> VEO3;
+    VEO3 -- "(8) Invokes VEO API & suspends" --> VEO_API;
+    VEO3 -- "(9) Triggers polling" --> Poll;
+    Poll -- "(10) Polls VEO API for completion" --> VEO_API;
+    Poll -- "(11) Lifts suspension" --> VEO3;
+    VEO3 -- "(12) Resumes & updates final state" --> Firestore;
 ```
 
-1.  **Web App (Cloud Run)**: A Python Flask application provides the user interface for uploading videos and viewing results.
-2.  **Cloud Storage**: Acts as the trigger and repository for raw video files.
-3.  **Application Integration**: The core orchestrator. A series of integrations (`veo-architecture`, `gemini-v2`, `veo3`, etc.) manage the entire workflow, from task creation to state management.
-4.  **Cloud Tasks**: Manages the asynchronous execution of long-running video processing jobs.
-5.  **Firestore**: A NoSQL database used to store the state of each video processing job and the final results.
-6.  **Vertex AI (VEO/Gemini)**: The AI models used for video understanding and analysis.
+1.  **Initial Request**: The **Web App** submits a new video processing request to the main **veo-architecture** integration.
+2.  **Create Initial Record**: The **veo-architecture** integration immediately creates a unique job ID (UUID) and saves a record to **Firestore** with an initial status (e.g., "incomplete").
+3.  **Immediate Response**: The integration returns the new job ID to the **Web App**.
+4.  **Periodic Polling**: The **Web App** now uses this ID to periodically poll the main integration for status updates.
+5.  **Prompt Enhancement**: Asynchronously, the main integration proceeds by calling the **gemini-v2** integration to refine the prompt.
+6.  **Create Async Task**: It then calls the **add-task-queue** integration to place the job in a Cloud Tasks queue for rate-limiting and decoupling.
+7.  **Trigger VEO Integration**: A task from the queue triggers the **veo3** integration.
+8.  **Invoke & Suspend**: The **veo3** integration calls the external **VEO3 Endpoint** to start the video analysis and then immediately suspends its own execution.
+9.  **Trigger Polling**: Upon suspension, **veo3** triggers the **poll-veo** integration.
+10. **Check for Completion**: The **poll-veo** integration repeatedly polls the **VEO3 Endpoint** until the analysis is complete.
+11. **Lift Suspension**: Once the job is finished, **poll-veo** lifts the suspension on the waiting **veo3** integration.
+12. **Persist Final State**: The now-resumed **veo3** integration takes the final results and updates the job's record directly in **Firestore**.
+13. **Return Status**: When the Web App polls for status, the main **veo-architecture** integration reads the latest state for the given job ID from **Firestore** and returns it.
 
 ## ⚙️ Prerequisites
 
