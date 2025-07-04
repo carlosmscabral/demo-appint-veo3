@@ -28,13 +28,13 @@ export SERVICE_NAME="<your-cloud-run-service-name>"
 # Set the service account (short name or full email)
 export SERVICE_ACCOUNT="<your-service-account-name-or-email>"
 
-# Set the queue name
+# Set the queue name. valid characters are /[a-z][0-9]-/
 export QUEUE_NAME="<your-queue-name>"
 
-# Set the state collection name
+# Set the state collection name. valid characters are /[a-z][0-9]-/
 export STATE_COLLECTION="<your-state-collection>"
 
-# Set the state database name
+# Set the state database name. valid characters are /[a-z][0-9]-/
 export STATE_DB="<your-state-db>"
 
 echo "✅ GCP environment variables set."

@@ -158,7 +158,7 @@ else
         --max-attempts=3 \
         --max-dispatches-per-second=0.167 \
         --max-concurrent-dispatches=5 \
-        --http-oauth-service-account-email-override="$SERVICE_ACCOUNT" \
+        --http-oauth-service-account-email-override="$SA_EMAIL" \
         --http-oauth-token-scope-override="https://www.googleapis.com/auth/cloud-platform" \
         --min-backoff=10s \
         --max-backoff=300s \
@@ -210,7 +210,7 @@ VEO3_OVERRIDES_FILE="veo3/dev/overrides/overrides.json"
 # Substitute placeholders with environment variable values directly in the config file
 sed $SED_IN_PLACE_FLAG "s|#STATE_COLLECTION#|$STATE_COLLECTION|g" "$VEO3_CONFIG_FILE"
 sed $SED_IN_PLACE_FLAG "s|#STATE_DB#|$STATE_DB|g" "$VEO3_CONFIG_FILE"
-sed $SED_IN_PLACE_FLAG "s|#SERVICE_ACCOUNT#|$SERVICE_ACCOUNT|g" "$VEO3_OVERRIDES_FILE"
+sed $SED_IN_PLACE_FLAG "s|#SERVICE_ACCOUNT#|$SA_EMAIL|g" "$VEO3_OVERRIDES_FILE"
 
 echo "✅ VEO3 configuration updated."
 
@@ -220,7 +220,7 @@ echo "📝 Updating Poll VEO configuration..."
 POLL_VEO_OVERRIDES_FILE="poll-veo/dev/overrides/overrides.json"
 
 # Substitute placeholders with environment variable values directly in the config file
-sed $SED_IN_PLACE_FLAG "s|#SERVICE_ACCOUNT#|$SERVICE_ACCOUNT|g" "$POLL_VEO_OVERRIDES_FILE"
+sed $SED_IN_PLACE_FLAG "s|#SERVICE_ACCOUNT#|$SA_EMAIL|g" "$POLL_VEO_OVERRIDES_FILE"
 
 echo "✅ Poll VEO configuration updated."
 
@@ -230,7 +230,7 @@ echo "📝 Updating Add Task Queue configuration..."
 ADD_TASK_QUEUE_OVERRIDES_FILE="add-task-queue/dev/overrides/overrides.json"
 
 # Substitute placeholders with environment variable values directly in the config file
-sed $SED_IN_PLACE_FLAG "s|#SERVICE_ACCOUNT#|$SERVICE_ACCOUNT|g" "$ADD_TASK_QUEUE_OVERRIDES_FILE"
+sed $SED_IN_PLACE_FLAG "s|#SERVICE_ACCOUNT#|$SA_EMAIL|g" "$ADD_TASK_QUEUE_OVERRIDES_FILE"
 
 echo "✅ Add Task Queue configuration updated."
 
