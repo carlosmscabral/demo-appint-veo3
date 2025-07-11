@@ -138,9 +138,23 @@ The script will guide you through the deployment process. It will perform the fo
 
 If you chose to deploy the web application, the script will output the URL of the Cloud Run service at the end of the deployment process. You can open this URL in your browser to start using the application.
 
+## 🧹 Cleanup
+
+To remove all the resources created by the `deploy_all.sh` script, you can use the `cleanup.sh` script. This script will guide you through deleting all the created GCP resources, asking for confirmation before each step.
+
+Make the script executable and run it:
+
+```bash
+chmod +x cleanup.sh
+./cleanup.sh
+```
+
+> **Note**: The script does not delete the Firestore data. You must manually delete the collection from the Google Cloud Console.
+
 ## Scripts
 
-This project contains two deployment scripts:
+This project contains the following scripts:
 
 - `deploy_all.sh`: The main script to deploy the entire stack (infrastructure, integrations, and optionally the web app).
+- `cleanup.sh`: Reverses the deployment, deleting all created resources to avoid incurring further costs.
 - `src/deploy.sh`: A standalone script to deploy _only_ the Python web application. This is useful for iterating on the frontend without re-deploying the entire backend.
