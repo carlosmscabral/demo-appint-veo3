@@ -142,10 +142,7 @@ If you chose to deploy the web application, the script will output the URL of th
 
 To remove all the resources created by the `deploy_all.sh` script, you can use the `cleanup.sh` script. This script will guide you through deleting all the created GCP resources, asking for confirmation before each step.
 
-Make the script executable and run it:
-
 ```bash
-chmod +x cleanup.sh
 ./cleanup.sh
 ```
 
