@@ -155,3 +155,14 @@ This project contains the following scripts:
 - `deploy_all.sh`: The main script to deploy the entire stack (infrastructure, integrations, and optionally the web app).
 - `cleanup.sh`: Reverses the deployment, deleting all created resources to avoid incurring further costs.
 - `src/deploy.sh`: A standalone script to deploy _only_ the Python web application. This is useful for iterating on the frontend without re-deploying the entire backend.
+
+## License
+
+All solutions within this repository are provided under the
+[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) license.
+Please see the [LICENSE](./LICENSE.txt) file for more detailed terms and conditions.
+
+## Not Google Product Clause
+
+This is not an officially supported Google product, nor is it part of an
+official Google product.
